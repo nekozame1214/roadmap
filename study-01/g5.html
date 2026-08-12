@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>パフォーマンスチューニング実務 — 実務ソフトウェア開発力 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-01.html">← Layer 01 概要</a>
+    <a href="../ai-skillset.html#L01">チェックリストで見る</a>
+    <span class="strip"><a href="../study-00.html">00 基礎</a>
+      <a href="../study-01.html" class="current">01 実務開発力</a>
+      <a href="../study-02.html">02 プロジェクト遂行</a>
+      <a href="../study-03.html">03 LLM理解</a>
+      <a href="../study-04.html">04 プロンプト</a>
+      <a href="../study-05.html">05 実務</a>
+      <a href="../study-06.html">06 エージェント</a>
+      <a href="../study-07.html">07 評価</a>
+      <a href="../study-08.html">08 セキュリティ</a>
+      <a href="../study-09.html">09 コスト</a>
+      <a href="../study-10.html">10 組織</a>
+      <a href="../study-11.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 01 / 実務ソフトウェア開発力 — 5 of 6</p>
+    <h1>パフォーマンスチューニング実務</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>プロファイリング<span class="gl">どこが遅いか計測</span></h3>
+      <div class="chips"><span class="chip">CPUプロファイラの使い方</span>
+            <span class="chip">メモリプロファイラの使い方</span>
+            <span class="chip">フレームグラフ<span class="gl">処理時間の内訳図</span>の読み方</span>
+            <span class="chip">本番相当環境での計測</span>
+            <span class="chip">計測前後の比較手順</span></div>
+      <div class="prose"><p>プロファイリングとは、プログラムのどの部分がどれだけの時間やメモリを消費しているかを実測する技術である。<strong>CPUプロファイラの使い方</strong>と<strong>メモリプロファイラの使い方</strong>を知っていれば、感覚ではなくデータに基づいて遅い箇所を特定できる。</p>
+            <p>一人前のエンジニアにこれが求められるのは、パフォーマンス問題の多くが直感に反する場所で起きるからだ。「ここが遅いはずだ」という思い込みで修正しても、実際のボトルネックとずれていれば効果は出ない。処理時間の内訳を視覚的に表す<strong>フレームグラフの読み方</strong>を習得すると、どの関数呼び出しが全体の時間を占めているかを一目で把握できるようになる。</p>
+            <p>実務での勘所は、開発環境ではなく<strong>本番相当環境での計測</strong>を行うことだ。ローカル環境はデータ量やネットワーク条件が本番と異なり、そこで問題なくても本番で遅いことは珍しくない。また改善を行う際は必ず<strong>計測前後の比較手順</strong>を踏み、変更が本当に効果を出したのかを数値で確認する習慣が欠かせない。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>Node.jsの--profオプションやChrome DevTools ProfilerでCPU使用率の高い処理を実際に計測し、得られたフレームグラフを読んでボトルネック候補を1つ特定する。所要目安60分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>ボトルネックの特定と改善</h3>
+      <div class="chips"><span class="chip">推測ではなく計測から始める</span>
+            <span class="chip">改善の優先順位付け<span class="gl">影響が大きい箇所から</span></span>
+            <span class="chip">1変更ずつの検証</span>
+            <span class="chip">改善効果の記録</span>
+            <span class="chip">過剰最適化を避ける判断</span></div>
+      <div class="prose"><p>ボトルネックの特定と改善とは、プロファイリングで得たデータをもとに、実際に手を動かして性能を改善していく実践的な工程である。原則は<strong>推測ではなく計測から始める</strong>ことで、これはプロファイリングの成果を無駄にしないための基本姿勢である。</p>
+            <p>一人前のエンジニアは、見つかった全ての改善候補に等しく取り組むのではなく、<strong>改善の優先順位付け</strong>を行い、全体への影響が大きい箇所から着手する。全体の実行時間の1%を占める処理を最適化しても体感は変わらないが、50%を占める処理を半分にできれば大きな効果が出る。</p>
+            <p>実務での重要な規律は<strong>1変更ずつの検証</strong>だ。複数の改善を同時に適用すると、どの変更が効果を生んだのか、あるいは逆に悪化させたのかが分からなくなる。地道でも一つずつ試し、<strong>改善効果の記録</strong>を残すことで、チームの知見として蓄積できる。同時に、<strong>過剰最適化を避ける判断</strong>も重要で、必要以上に複雑なコードにしてまで微小な性能改善を追い求めると、保守性を犠牲にしてしまう。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>前項のプロファイリングで見つけたボトルネックに対して改善策を1つだけ適用し、改善前後の実行時間を計測して数値で記録する。所要目安45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>DBチューニング実践</h3>
+      <div class="chips"><span class="chip">遅いクエリの特定</span>
+            <span class="chip">実行計画の比較検証</span>
+            <span class="chip">インデックス追加の効果測定</span>
+            <span class="chip">コネクションプール<span class="gl">接続の使い回し</span>の調整</span>
+            <span class="chip">バッチサイズの調整</span></div>
+      <div class="prose"><p>DBチューニングとは、データベースへのアクセスを高速化・効率化する技術で、多くのWebアプリケーションでは性能問題の大部分がDB周りに起因する。まず<strong>遅いクエリの特定</strong>を行い、実際にどのクエリが時間を食っているかを可視化することが出発点になる。</p>
+            <p>一人前のエンジニアは、遅いクエリを見つけたら<strong>実行計画の比較検証</strong>を行い、DBがそのクエリをどう処理しようとしているかを読み解く。ここで有効な打ち手の一つが<strong>インデックス追加の効果測定</strong>だが、インデックスは検索を速くする一方で書き込みを遅くし、ストレージも消費するため、追加した後に本当に効果があったかを測定せずに終わらせてはいけない。</p>
+            <p>実務でクエリ単体の速度改善だけでなく見落とされがちなのが、DBへの接続をどう管理するかという<strong>コネクションプールの調整</strong>である。接続数が少なすぎればリクエストが詰まり、多すぎればDB側のリソースを圧迫する。また大量データを扱うバルク処理では、一度に処理する件数を調整する<strong>バッチサイズの調整</strong>によって、メモリ消費とスループットのバランスを取ることが実務上の重要な技術になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>スロークエリログやEXPLAINで自分のDBの遅いクエリを1つ特定し、インデックスを追加する前後で実行計画と実行時間がどう変わるかを比較する。所要目安60分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>フロントエンド最適化実践</h3>
+      <div class="chips"><span class="chip">バンドルサイズの分析</span>
+            <span class="chip">コード分割<span class="gl">必要な分だけ読み込む</span></span>
+            <span class="chip">遅延読み込み<span class="gl">必要になってから取得</span></span>
+            <span class="chip">不要な再レンダリングの削減</span>
+            <span class="chip">キャッシュヘッダの最適化</span></div>
+      <div class="prose"><p>フロントエンド最適化実践とは、ユーザーの手元に届くまでの配信サイズと、届いた後の描画速度の両方を改善する取り組みである。まず<strong>バンドルサイズの分析</strong>を行い、実際に何がファイルサイズを膨らませているのかを可視化しないことには、闇雲な対策になってしまう。</p>
+            <p>一人前のエンジニアが実践するのが、必要な機能だけを分割して読み込む<strong>コード分割</strong>と、画面に表示されるまでリソースの取得を遅らせる<strong>遅延読み込み</strong>だ。初回に必要なコードだけを最小限にすることで、ユーザーが最初にページを開く体験を大きく改善できる。</p>
+            <p>実務では前述の状態管理やレンダリングの理解を踏まえた<strong>不要な再レンダリングの削減</strong>も欠かせない改善対象であり、また<strong>キャッシュヘッダの最適化</strong>によって、変更のない静的ファイルはブラウザやCDNに長期間キャッシュさせ、頻繁に変わるコンテンツだけを都度取得させるといった配信戦略の作り込みが、体感速度の底上げに直結する。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>webpack-bundle-analyzer（または相当のツール）でバンドルの内訳を可視化し、サイズの大きいライブラリを1つ動的importによる遅延読み込みに変更して、変更前後のバンドルサイズを比較する。所要目安45分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://note.com/tedd_jp/n/nf11d3410a496">CPUパフォーマンスの謎解き：CPUフレームグラフを用いたホットコードパスの特定</a>
+          <span class="domain">note.com</span>
+          <p class="desc">フレームグラフの読み方とボトルネック特定の実践を学べる</p>
+        </li>
+        <li>
+          <a href="https://zenn.dev/seyama/articles/81f54a4ddedf11">SQLが重いときに見るお気軽チューニング方法</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">遅いクエリの特定からインデックス調整までの実務的な手順を学べる</p>
+        </li>
+        <li>
+          <a href="https://developer.mozilla.org/ja/docs/Glossary/Code_splitting">Code splitting（コード分割）</a>
+          <span class="domain">developer.mozilla.org</span>
+          <p class="desc">コード分割の目的と仕組みを公式ドキュメントで学べる</p>
+        </li>
+        <li>
+          <a href="https://blog.fundely.co.jp/tech/2023/08/09/%E7%88%86%E9%80%9F%E3%82%A2%E3%83%97%E3%83%AA%E3%82%92%E7%9B%AE%E6%8C%87%E3%81%97%E3%81%A6%E3%82%B3%E3%83%BC%E3%83%89%E5%88%86%E5%89%B2%E3%81%AB%E3%82%88%E3%82%8B%E9%80%9F%E5%BA%A6%E6%94%B9%E5%96%84/">爆速アプリを目指して〜コード分割による速度改善〜</a>
+          <span class="domain">blog.fundely.co.jp</span>
+          <p class="desc">コード分割によるバンドルサイズ削減の実践例を学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="g4.html">← システム設計実践・スケーラビリティ</a>
+      <a href="g6.html">ツールチェーン・開発生産性 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ネットワーク — エンジニアリング基礎 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-00.html">← Layer 00 概要</a>
+    <a href="../ai-skillset.html#L00">チェックリストで見る</a>
+    <span class="strip"><a href="../study-00.html" class="current">00 基礎</a>
+    <a href="../study-01.html">01 実務開発力</a>
+    <a href="../study-02.html">02 プロジェクト遂行</a>
+    <a href="../study-03.html">03 LLM理解</a>
+    <a href="../study-04.html">04 プロンプト</a>
+    <a href="../study-05.html">05 実務</a>
+    <a href="../study-06.html">06 エージェント</a>
+    <a href="../study-07.html">07 評価</a>
+    <a href="../study-08.html">08 セキュリティ</a>
+    <a href="../study-09.html">09 コスト</a>
+    <a href="../study-10.html">10 組織</a>
+    <a href="../study-11.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 00 / エンジニアリング基礎 — 4 of 12</p>
+    <h1>ネットワーク</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>プロトコル基礎</h3>
+      <div class="chips"><span class="chip">OSI参照モデル<span class="gl">通信を7層に分けたモデル</span></span>
+            <span class="chip">TCP<span class="gl">確実に届ける</span>とUDP{速さ優先}</span>
+            <span class="chip">3ウェイハンドシェイク<span class="gl">接続確立の3往復</span></span>
+            <span class="chip">ポートとソケット<span class="gl">通信の窓口</span></span>
+            <span class="chip">NAT<span class="gl">内外のアドレス変換</span></span>
+            <span class="chip">ファイアウォール</span></div>
+      <div class="prose"><p>OSI参照モデルは通信を7つの層に分けて整理した概念モデルであり、実際の通信ではTCPが確実な到達を保証する代わりに速度を犠牲にし、UDPは到達保証を持たない代わりに速さを優先する。TCP接続の確立には3ウェイハンドシェイクと呼ばれる3回の往復が必要で、ポートとソケットは通信の窓口を識別し、NATは内部アドレスと外部アドレスを変換し、ファイアウォールは不要な通信を遮断する。</p>
+            <p>これらはあらゆるネットワーク障害の切り分けの出発点であり、「つながらない」という一言の裏にDNS、TCP、TLS、アプリケーション層のどこに問題があるかを層構造で切り分けられる能力は、一人前のエンジニアの基本動作である。AIが生成したインフラ構成やネットワーク設定がセキュリティグループやファイアウォールの穴を作っていないかを見抜くにもこの理解が前提になる。</p>
+            <p>実務でよくあるのは、TCPとUDPの特性を理解せずに信頼性が必要な通信にUDPを使ってしまう、あるいはリアルタイム性が必要な用途にTCPのオーバーヘッドを持ち込んでしまうといった選択ミスである。NATやファイアウォールの設定ミスはクラウド環境で頻発する障害原因であり、疎通確認の手順を体系的に持っているかどうかが障害対応の速度を左右する。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>curlやncコマンドでTCP接続を確立し、tcpdumpやWiresharkでパケットをキャプチャして3ウェイハンドシェイクの3回の往復を実際に観察する。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>HTTP</h3>
+      <div class="chips"><span class="chip">HTTP/1.1・HTTP/2・HTTP/3の違い</span>
+            <span class="chip">メソッドと冪等性<span class="gl">何回やっても結果が同じ性質</span></span>
+            <span class="chip">ステータスコード<span class="gl">2xx/3xx/4xx/5xx</span></span>
+            <span class="chip">ヘッダ<span class="gl">付帯情報</span></span>
+            <span class="chip">Cookie<span class="gl">ブラウザに保存する小データ</span>とセッション</span>
+            <span class="chip">キャッシュ制御</span>
+            <span class="chip">Keep-Alive<span class="gl">接続の使い回し</span></span>
+            <span class="chip">WebSocket<span class="gl">双方向の常時接続</span></span>
+            <span class="chip">SSE<span class="gl">サーバーからの逐次送信</span></span></div>
+      <div class="prose"><p>HTTP/1.1・HTTP/2・HTTP/3はそれぞれ接続の多重化や暗号化前提の度合いが異なり、メソッドには何度実行しても結果が同じになる冪等性という性質があり、ステータスコードは2xx（成功）・3xx（リダイレクト）・4xx（クライアントエラー）・5xx（サーバーエラー）に大別される。ヘッダは付帯情報を運び、Cookieはブラウザに保存する小さなデータでセッション管理に使われ、キャッシュ制御やKeep-Alive（接続の使い回し）は性能に直結する。WebSocketは双方向の常時接続、SSEはサーバーから逐次データを送る仕組みであり、リアルタイム通信の選択肢を広げる。</p>
+            <p>HTTPはWeb開発の共通言語であり、ステータスコードとメソッドの冪等性を正しく理解しないまま設計されたAPIは、リトライ処理やキャッシュ戦略と衝突して思わぬバグを生む。AIが生成したAPIエンドポイントがGETで副作用のある処理を行っていないか、適切なステータスコードを返しているかは、API品質を見極める基本的なチェックポイントである。</p>
+            <p>実務での落とし穴は、POSTを冪等でない前提で設計しながらリトライ機構が二重実行を起こしてしまうことや、キャッシュ制御ヘッダの設定漏れで古いデータが表示され続けることである。WebSocketとSSEはどちらもリアルタイム性を実現するが、双方向通信が必要かどうかで使い分けるべきであり、要件を誤ると過剰な複雑さを持ち込むことになる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分のAPIエンドポイントにcurlで各メソッド(GET/POST/PUT/DELETE)を叩き、返るステータスコードとヘッダを確認して冪等性が守られているか検証する。所要目安: 45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>名前解決と暗号化</h3>
+      <div class="chips"><span class="chip">DNS<span class="gl">ドメイン名をIPに変換する仕組み</span>の解決手順</span>
+            <span class="chip">レコード種別<span class="gl">A・CNAME・MX・TXT</span></span>
+            <span class="chip">TTL<span class="gl">キャッシュ保持時間</span></span>
+            <span class="chip">TLS<span class="gl">通信の暗号化</span>ハンドシェイク</span>
+            <span class="chip">証明書とCA<span class="gl">認証局</span></span>
+            <span class="chip">HTTPS化と証明書更新</span></div>
+      <div class="prose"><p>DNSはドメイン名をIPアドレスに変換する仕組みで、A・CNAME・MX・TXTといったレコード種別ごとに異なる情報を保持し、TTLはそのキャッシュがどれだけ保持されるかを表す。TLSは通信を暗号化するハンドシェイクの仕組みであり、証明書とCA（認証局）によって通信相手の身元を保証し、HTTPS化と証明書更新はサービス運用の継続的な作業として発生する。</p>
+            <p>「サイトにアクセスできない」「証明書エラーが出る」といった障害の多くはDNSかTLSのどちらかに原因があり、これらの解決手順を理解していないと障害対応が長引く。証明書の自動更新やDNSレコードの設定をAIやIaCツールに任せる場面が増える中、生成された設定が正しいレコード種別・TTL・証明書チェーンになっているかを検証できる知識が必要になる。</p>
+            <p>よくある落とし穴は、TTLを長く設定しすぎてDNS変更の反映に時間がかかることや、証明書の自動更新が失敗して有効期限切れによるサービス停止を招くことである。CDNやロードバランサを挟んだ構成ではDNSの伝播とTLS終端の位置関係が複雑になり、これを図で説明できるかどうかが設計力の指標になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>digコマンドで自分のドメインのDNSレコード(A・CNAME・MX・TXT)を調べ、opensslでTLS証明書の有効期限とCAチェーンを確認する。所要目安: 45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>経路と制約</h3>
+      <div class="chips"><span class="chip">ロードバランサ<span class="gl">負荷分散装置</span></span>
+            <span class="chip">リバースプロキシ<span class="gl">前段で受ける中継</span></span>
+            <span class="chip">CDN<span class="gl">配信を高速化する分散配信網</span></span>
+            <span class="chip">CORS<span class="gl">別ドメインへのアクセス制御</span></span>
+            <span class="chip">プリフライトリクエスト<span class="gl">事前確認の問い合わせ</span></span>
+            <span class="chip">タイムアウトとリトライ<span class="gl">再試行</span></span></div>
+      <div class="prose"><p>ロードバランサは複数のサーバーに負荷を分散する装置、リバースプロキシはクライアントとサーバーの間で通信を中継する仕組みであり、CDNはコンテンツを地理的に分散配置して配信を高速化するネットワークである。CORSは別ドメインへのアクセスを制御するブラウザの仕組みで、事前に許可を確認するプリフライトリクエストが発生する場合があり、タイムアウトとリトライは通信の不確実性に対処する基本的な戦略である。</p>
+            <p>現代のWebシステムはほぼ例外なくこれらの経路上の要素を経由するため、フロントエンドからAPIが叩けない原因がCORS設定にあるのか、ロードバランサのヘルスチェック設定にあるのかを切り分けられる力が求められる。AIが生成したフロントエンド・バックエンド間の通信コードがCORSエラーで動かない、といった初歩的なつまずきを未然に防げるかもこの知識にかかっている。</p>
+            <p>実務での落とし穴は、CORSのワイルドカード設定でセキュリティを緩めすぎることや、タイムアウトとリトライの設定を誤って障害時に負荷が雪だるま式に増えるリトライストームを起こすことである。CDNのキャッシュ設定ミスは古いコンテンツを配信し続ける原因になり、パージ（キャッシュ削除）の手順を知らないと障害復旧が長引く。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>ローカルで別ポートのフロントエンドとAPIサーバーを立ててCORSエラーを実際に発生させ、適切なヘッダ設定で解消するまでを一通り体験する。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://qiita.com/purojyu/items/cd25a3c5eba8f428730c">TCP 3ウェイハンドシェイクの詳細</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">接続確立時の3回の往復で何が行われているかを詳細に追える</p>
+        </li>
+        <li>
+          <a href="https://zenn.dev/erntorii/articles/2023-02-02_status-code">覚えておきたいHTTPメソッド/ステータスコード</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">メソッドの冪等性とステータスコードの使い分けを整理できる</p>
+        </li>
+        <li>
+          <a href="https://future-architect.github.io/articles/20220222a/">CORSエラーのトラブルシューティング入門</a>
+          <span class="domain">future-architect.github.io</span>
+          <p class="desc">CORSエラーが起きる原因と切り分け方を実践的に学べる</p>
+        </li>
+        <li>
+          <a href="https://blog.cloudflare.com/ja-jp/dns-encryption-explained-ja-jp/">DNS暗号化について</a>
+          <span class="domain">blog.cloudflare.com</span>
+          <p class="desc">DNSの名前解決の仕組みと暗号化の必要性を理解できる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="g3.html">← 3. OS・低レイヤ</a>
+      <a href="g5.html">5. データ表現 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

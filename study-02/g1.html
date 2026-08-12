@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>要件定義・仕様策定 — プロジェクト遂行・組織コミュニケーション — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-02.html">← Layer 02 概要</a>
+    <a href="../ai-skillset.html#L02">チェックリストで見る</a>
+    <span class="strip"><a href="../study-00.html">00 基礎</a>
+    <a href="../study-01.html">01 実務開発力</a>
+    <a href="../study-02.html" class="current">02 プロジェクト遂行</a>
+    <a href="../study-03.html">03 LLM理解</a>
+    <a href="../study-04.html">04 プロンプト</a>
+    <a href="../study-05.html">05 実務</a>
+    <a href="../study-06.html">06 エージェント</a>
+    <a href="../study-07.html">07 評価</a>
+    <a href="../study-08.html">08 セキュリティ</a>
+    <a href="../study-09.html">09 コスト</a>
+    <a href="../study-10.html">10 組織</a>
+    <a href="../study-11.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 02 / プロジェクト遂行・組織コミュニケーション — 1 of 7</p>
+    <h1>要件定義・仕様策定</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>ヒアリング技法</h3>
+      <div class="chips"><span class="chip">利用者の課題と要望を分離する</span>
+            <span class="chip">本当のニーズを深掘りする質問</span>
+            <span class="chip">業務フローの可視化</span>
+            <span class="chip">現状把握を先に行う</span>
+            <span class="chip">言葉の定義をすり合わせる</span></div>
+      <div class="prose"><p>ヒアリングとは、依頼された要望をそのまま鵜呑みにせず、相手が本当に解決したい課題を聞き出す技術である。「システムに◯◯機能を追加してほしい」という要望の背後には、必ず「なぜそれが必要なのか」という課題がある。利用者の課題と要望を分離する視点を持たないまま実装に進むと、要望は満たしても課題は解決されないという事態を招く。</p>
+            <p>一人前のエンジニアは、言われたものを作る人ではなく、課題を解決する人として評価される。要望と課題を混同したまま設計に進むと、後工程で「これじゃない」という手戻りが発生し、プロジェクト全体の信頼を損なう。ヒアリング力は要件定義の質を左右する最初の関門であり、AI導入の文脈でも「何を自動化すべきか」を正しく引き出す力として直結する。</p>
+            <p>実務では、現状把握を先に行うことが鉄則である。いきなり理想像を尋ねると、相手も自分の業務フローを整理できておらず、曖昧な要望しか出てこない。業務フローの可視化をしながら会話すると、抜け漏れや矛盾が自然と見えてきて、本当のニーズを深掘りする質問が出しやすくなる。また「ユーザー」「承認」「完了」といった言葉の定義をすり合わせることを早い段階で行わないと、後になって同じ単語を違う意味で使っていたことが発覚し、大きな手戻りにつながる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>直近の依頼(社内の小さな相談でも可)を1つ選び、要望をそのまま書き出した後「なぜそれが必要か」を3回掘り下げて、本当の課題を1文で言語化してみる。所要時間の目安: 30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>要求の言語化</h3>
+      <div class="chips"><span class="chip">ユーザーストーリー<span class="gl">利用者視点での要求記述</span></span>
+            <span class="chip">受け入れ基準<span class="gl">完了と判断する条件</span>の明記</span>
+            <span class="chip">優先順位付け<span class="gl">MoSCoW等</span></span>
+            <span class="chip">スコープに含めないことの明記</span>
+            <span class="chip">前提条件の文書化</span></div>
+      <div class="prose"><p>要求の言語化とは、ヒアリングで得た曖昧な要望を、開発チームが実装できる粒度の文章に変換する作業である。代表的な形式がユーザーストーリー<span class="gl">利用者視点での要求記述</span>で、「〇〇として、△△したい。なぜなら□□だから」という形で、機能ではなく利用者の目的を軸に記述する。</p>
+            <p>言語化が甘いと、開発者ごとに解釈が分かれ、完成したものが期待と違うという事態を招く。受け入れ基準<span class="gl">完了と判断する条件</span>の明記は、「完成」の定義を関係者間で一致させるための最も実務的な手段であり、これがないレビューは水掛け論になりやすい。</p>
+            <p>すべての要求を同じ重みで扱うと開発は破綻するため、優先順位付け<span class="gl">MoSCoW等</span>のような手法で「必須・推奨・任意・対象外」を明示する。同時に、スコープに含めないことの明記と前提条件の文書化も忘れてはならない。「ここまではやらない」「この環境が前提」という境界線を書いておかないと、後工程で「なぜやってくれなかったのか」という不満につながる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>直近のタスクを1つ選び、「〇〇として、△△したい。なぜなら□□だから」の形式でユーザーストーリーを書き、受け入れ基準を3つ以上箇条書きにする。所要時間の目安: 30〜45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>非機能要件の合意</h3>
+      <div class="chips"><span class="chip">性能・可用性・セキュリティ要件の言語化</span>
+            <span class="chip">数値目標への落とし込み</span>
+            <span class="chip">将来の拡張性の考慮</span>
+            <span class="chip">合意形成のタイミング</span>
+            <span class="chip">要件変更時の再合意プロセス</span></div>
+      <div class="prose"><p>非機能要件とは、「何ができるか」ではなく「どれくらいの品質で動くか」を定めるものであり、性能・可用性・セキュリティ要件の言語化がその中心になる。機能要件だけを合意して着手すると、リリース直前になって「もっと速くしてほしい」「落ちないでほしい」という後出しの要求に苦しむことになる。</p>
+            <p>一人前のエンジニアは、非機能要件を後回しにせず初期段階で数値目標への落とし込みまで行う。「レスポンス3秒以内」「月間ダウンタイム1時間以内」のように具体化しておくことで、設計判断の基準が明確になり、後から「速い/遅い」の水掛け論を避けられる。</p>
+            <p>将来の拡張性の考慮も重要な論点で、今の要件だけに最適化した設計は、半年後の仕様変更で作り直しになることがある。ただし過剰な将来対応はコストを膨らませるため、合意形成のタイミングを見極め、どこまで先を見るかを関係者と握っておく必要がある。また事業が動く以上、非機能要件も変わりうるため、要件変更時の再合意プロセスをあらかじめ決めておくと、変更のたびに揉めることを防げる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分の担当システム(または身近なWebサービス)について、性能・可用性・セキュリティの3項目それぞれに具体的な数値目標を1つずつ設定してみる。所要時間の目安: 30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>スコープ管理</h3>
+      <div class="chips"><span class="chip">スコープクリープ<span class="gl">知らぬ間に範囲が広がること</span>の兆候察知</span>
+            <span class="chip">変更要求の受け入れ判断基準</span>
+            <span class="chip">MVP<span class="gl">最小限で価値が出る形</span>の見極め</span>
+            <span class="chip">段階的リリース計画への分割</span></div>
+      <div class="prose"><p>スコープ管理とは、プロジェクトが扱う範囲を意図的にコントロールし続ける活動である。放っておくとスコープクリープ<span class="gl">知らぬ間に範囲が広がること</span>の兆候が静かに進行し、気づいたときには当初の見積もりが意味を成さないほど作業量が膨らんでいる。</p>
+            <p>これは技術力とは別軸の、プロジェクトを完遂させる力そのものであり、一人前のエンジニアやテックリードに強く求められる。良かれと思って引き受けた小さな追加要望の積み重ねが、納期遅延の最大要因になることは珍しくない。</p>
+            <p>実務では、すべての変更要求を機械的に拒否するのではなく、変更要求の受け入れ判断基準を持っておくことが肝要である。影響範囲・工数・重要度を明示した上で、代わりに何を落とすかとセットで議論する。また、いきなり完成形を目指すのではなく、MVP<span class="gl">最小限で価値が出る形</span>の見極めを行い、段階的リリース計画への分割を行うことで、早期にフィードバックを得ながらスコープを健全に保てる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>現在または過去のタスクを1つ選び、「今回やること」と「今回やらないこと」を分けて書き出し、最初にリリースすべき最小範囲(MVP)に丸をつける。所要時間の目安: 30分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://note.com/it_shokunin/n/n79adadf6983e">ヒアリング中に焦らない！要件定義インタビューの進め方とその場対応術</a>
+          <span class="domain">note.com</span>
+          <p class="desc">要件定義インタビューの進め方と、当日のその場対応のコツが学べる</p>
+        </li>
+        <li>
+          <a href="https://pm-rasinban.com/rd-process">要件定義工程の進め方 | 若手エンジニアの羅針盤</a>
+          <span class="domain">pm-rasinban.com</span>
+          <p class="desc">要件定義工程全体の進め方を体系的に学べる</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/ho__na/items/a84f9a0db793cb0411db">要件定義｜3分で読める非機能要件について</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">非機能要件の全体像を短時間で把握できる</p>
+        </li>
+        <li>
+          <a href="https://service.shiftinc.jp/column/8639/">非機能要件とは？機能要件との違いや設計方法、設計のポイントについて解説</a>
+          <span class="domain">service.shiftinc.jp</span>
+          <p class="desc">非機能要件の設計方法とポイントを詳しく学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../study-02.html">← レイヤー概要</a>
+      <a href="g2.html">g2 次のグループ →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

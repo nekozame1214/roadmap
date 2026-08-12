@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>フロントエンド実装 — 実務ソフトウェア開発力 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-01.html">← Layer 01 概要</a>
+    <a href="../ai-skillset.html#L01">チェックリストで見る</a>
+    <span class="strip"><a href="../study-00.html">00 基礎</a>
+      <a href="../study-01.html" class="current">01 実務開発力</a>
+      <a href="../study-02.html">02 プロジェクト遂行</a>
+      <a href="../study-03.html">03 LLM理解</a>
+      <a href="../study-04.html">04 プロンプト</a>
+      <a href="../study-05.html">05 実務</a>
+      <a href="../study-06.html">06 エージェント</a>
+      <a href="../study-07.html">07 評価</a>
+      <a href="../study-08.html">08 セキュリティ</a>
+      <a href="../study-09.html">09 コスト</a>
+      <a href="../study-10.html">10 組織</a>
+      <a href="../study-11.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 01 / 実務ソフトウェア開発力 — 2 of 6</p>
+    <h1>フロントエンド実装</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>HTML/CSS実務</h3>
+      <div class="chips"><span class="chip">セマンティックHTML<span class="gl">意味に沿ったタグ選び</span></span>
+            <span class="chip">ボックスモデルの理解</span>
+            <span class="chip">Flexbox・Gridでのレイアウト</span>
+            <span class="chip">レスポンシブデザイン<span class="gl">画面幅に応じた最適化</span></span>
+            <span class="chip">CSS設計手法<span class="gl">命名規約・スコープ管理</span></span>
+            <span class="chip">ブラウザ間差異への対応</span></div>
+      <div class="prose"><p>HTML/CSSは見た目だけの技術と誤解されがちだが、実際には構造と意味を正しく表現する技術である。見出しには見出しタグ、ボタンにはボタン要素を使うといった<strong>セマンティックHTML</strong>は、後述するアクセシビリティやSEOの土台になる。レイアウトの基礎である<strong>ボックスモデルの理解</strong>がないまま余白や幅の調整を続けると、見た目の崩れを場当たり的なCSSで塞ぐ悪循環に陥る。</p>
+            <p>一人前のエンジニアは、<strong>Flexbox・Gridでのレイアウト</strong>を使い分けて、複雑な配置を最小限のCSSで実現できる必要がある。並びが1方向で良ければFlexbox、行と列の両方を制御したければGridというように、目的に応じた選択ができるかどうかで実装の保守性が大きく変わる。</p>
+            <p>実務で欠かせないのが<strong>レスポンシブデザイン</strong>であり、スマートフォンからデスクトップまで画面幅に応じて最適な表示を提供することは、もはや前提条件になっている。またチーム開発では<strong>CSS設計手法</strong>による命名規約やスコープ管理がないと、あるコンポーネントのスタイル変更が別の場所を意図せず壊す「CSSの副作用」が頻発する。加えて<strong>ブラウザ間差異への対応</strong>は地味だが根強い落とし穴で、特定のブラウザでだけレイアウトが崩れるという不具合は、確認を怠ると本番で発覚しがちだ。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>HTML/CSSで書いた既存ページを1つ選び、BEMなどの命名規則でクラス名を付け直し、レイアウトをFlexbox/Gridで組み直す。Chrome DevToolsのデバイスツールバーで複数の画面幅とブラウザでの見え方を確認する。所要目安45〜60分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>アクセシビリティ</h3>
+      <div class="chips"><span class="chip">セマンティクスとARIA属性</span>
+            <span class="chip">キーボード操作対応</span>
+            <span class="chip">スクリーンリーダー<span class="gl">音声で読み上げる支援技術</span>での確認</span>
+            <span class="chip">コントラスト比</span>
+            <span class="chip">フォーカス管理</span>
+            <span class="chip">アクセシビリティ監査ツールの活用</span></div>
+      <div class="prose"><p>アクセシビリティとは、視覚・聴覚・運動機能などに制約のある人を含め、誰もが使えるようにUIを作る取り組みである。正しい<strong>セマンティクスとARIA属性</strong>の使用は、<strong>スクリーンリーダー</strong>を使うユーザーにボタンやフォームの意味を正確に伝えるために欠かせない。</p>
+            <p>これが一人前のエンジニアに求められる理由は、アクセシビリティが「あれば嬉しい追加機能」ではなく、法規制や企業のコンプライアンス要件になりつつあり、かつ多くのユーザーの体験を底上げする基礎品質だからだ。マウスを使わずタブキーだけで操作する<strong>キーボード操作対応</strong>や、視認性を確保する<strong>コントラスト比</strong>の確保は、健常なユーザーにとっても操作性の良さとして跳ね返ってくる。</p>
+            <p>実務での勘所は、<strong>フォーカス管理</strong>を後回しにしないことだ。モーダルを開いたときにフォーカスがどこに移るか、閉じたときに元の位置に戻るかといった細部を怠ると、キーボードユーザーは操作不能に陥る。すべてを手動確認するのは非現実的なので、<strong>アクセシビリティ監査ツールの活用</strong>によって機械的に検出できる問題を早期に潰し、人手でのレビューは判断が必要な部分に絞るのが現実的な進め方である。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分が作ったフォームやページをマウスを使わずTabキーだけで操作し、フォーカスの移動順序を確認する。Lighthouseのアクセシビリティ監査を実行し、指摘事項を1つ以上実際に修正する。所要目安45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>コンポーネント設計</h3>
+      <div class="chips"><span class="chip">再利用可能な単位への分割</span>
+            <span class="chip">Props<span class="gl">親から渡す値</span>とState<span class="gl">内部状態</span>の分離</span>
+            <span class="chip">コンポーネント間の責務分担</span>
+            <span class="chip">デザインシステム<span class="gl">共通部品集</span>との連携</span>
+            <span class="chip">過剰な分割の弊害</span></div>
+      <div class="prose"><p>コンポーネント設計とは、UIを意味のある単位に分割し、それぞれが独立して理解・再利用できるようにする技術である。<strong>再利用可能な単位への分割</strong>ができていないと、同じようなUIをあちこちにコピペし、修正のたびに全箇所を探して直すことになる。</p>
+            <p>一人前のエンジニアは、<strong>Propsとstateの分離</strong>を意識してコンポーネントを設計する。親から渡された値であるPropsと、コンポーネント自身が持つ内部状態であるStateを混同すると、データの流れが追えなくなり、どこで値が変わったのか分からないバグが生まれる。<strong>コンポーネント間の責務分担</strong>を明確にし、「このコンポーネントは表示だけ」「あのコンポーネントはデータ取得だけ」といった役割分けができると、変更の影響範囲を予測しやすくなる。</p>
+            <p>実務での落とし穴は両極端にある。分割が足りなければ巨大で読みにくいコンポーネントができるが、<strong>過剰な分割の弊害</strong>として、小さすぎる部品に分けすぎるとファイルを何度も行き来しないと全体像がつかめなくなる。適切な粒度の見極めは経験がものを言う部分であり、また社内やOSSの<strong>デザインシステム</strong>と連携することで、車輪の再発明を避けつつ一貫したUIを効率よく組み立てられる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>既存の大きめのコンポーネントを1つ選び、Propsとstateを整理した上で2〜3個の小さいコンポーネントに分割する。分割前後でファイルの見通しがどう変わったかをメモに残す。所要目安60分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>状態管理</h3>
+      <div class="chips"><span class="chip">ローカル状態とグローバル状態の使い分け</span>
+            <span class="chip">状態管理ライブラリの選定基準</span>
+            <span class="chip">サーバー状態とクライアント状態の分離</span>
+            <span class="chip">キャッシュと再取得のタイミング</span>
+            <span class="chip">状態の正規化<span class="gl">重複を避けた形での保持</span></span></div>
+      <div class="prose"><p>状態管理とは、アプリケーションが今どのようなデータを持っているかを整理し、変更を予測可能な形で反映させる技術である。あるコンポーネントだけで完結する値はローカル状態に、複数の画面をまたいで必要な値はグローバル状態に置くという<strong>ローカル状態とグローバル状態の使い分け</strong>ができないと、無関係な変更が思わぬ場所の再描画を引き起こす。</p>
+            <p>一人前のエンジニアに求められるのは、とりわけ<strong>サーバー状態とクライアント状態の分離</strong>という視点だ。APIから取得したデータ(サーバー状態)と、フォームの入力値のようにアプリ内だけで完結するデータ(クライアント状態)は性質が異なり、前者には<strong>キャッシュと再取得のタイミング</strong>という固有の課題がある。この区別を持たずに全てを同じ仕組みで管理しようとすると、無駄な再取得や古いデータの表示といった問題が起きやすい。</p>
+            <p>実務では、<strong>状態管理ライブラリの選定基準</strong>を持たずに流行のライブラリを導入すると、プロジェクトの規模に対して過剰に複雑な仕組みを抱え込むことがある。小規模ならフレームワーク標準の機能で十分なことも多い。また<strong>状態の正規化</strong>を怠ると、同じデータが複数箇所に重複して保持され、片方だけ更新して整合性が崩れるというありがちなバグを招く。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>フォームのローカル状態とAPIから取得したデータ（サーバー状態）を明確に分けて実装し直し、画面へのフォーカス復帰時に再取得するタイミングを1つ設定してみる。所要目安45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>ブラウザ描画とパフォーマンス</h3>
+      <div class="chips"><span class="chip">レンダリングパイプライン<span class="gl">描画までの流れ</span>の理解</span>
+            <span class="chip">再レンダリングの発生条件</span>
+            <span class="chip">仮想DOM<span class="gl">差分計算用の中間表現</span>の役割</span>
+            <span class="chip">レイアウトシフト<span class="gl">表示中のガタつき</span>の回避</span>
+            <span class="chip">画像・フォントの最適化読み込み</span></div>
+      <div class="prose"><p>ブラウザは、HTMLとCSSを解析してから画面に描画するまでに複数の段階を経ており、この<strong>レンダリングパイプラインの理解</strong>がないと「なぜこの変更が遅いのか」を説明できない。ReactなどのUIライブラリが使う<strong>仮想DOMの役割</strong>は、実際のDOM操作を最小限にするための差分計算の仕組みであり、これを理解しておくと不要な描画コストを避けられる。</p>
+            <p>一人前のエンジニアには、<strong>再レンダリングの発生条件</strong>を把握し、意図しない再描画を防ぐ力が求められる。これを知らないままコンポーネントを組むと、一箇所の状態変化が画面全体を再計算させ、体感速度を悪化させることがある。</p>
+            <p>実務でユーザー体験を大きく左右するのが<strong>レイアウトシフトの回避</strong>だ。画像の読み込み前後でサイズが確保されておらず、コンテンツがガタつきながら表示されると、ユーザーは誤操作しやすくなり不快感も強い。<strong>画像・フォントの最適化読み込み</strong>によってサイズをあらかじめ指定し、必要なリソースを優先的に読み込む工夫をするだけで、体感速度は大きく改善する。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>React DevTools（または相当のプロファイラ）で自分のアプリの再レンダリングを観察し、不要な再描画が起きている箇所を1つ特定してmemo化などで抑制する。抑制前後の再レンダリング回数を比較する。所要目安45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>Core Web Vitals<span class="gl">ユーザー体験の主要指標</span></h3>
+      <div class="chips"><span class="chip">LCP<span class="gl">表示速度の指標</span></span>
+            <span class="chip">INP<span class="gl">応答性の指標</span></span>
+            <span class="chip">CLS<span class="gl">視覚的な安定性の指標</span></span>
+            <span class="chip">計測ツールの使い方</span>
+            <span class="chip">改善優先度の付け方</span></div>
+      <div class="prose"><p>Core Web Vitalsは、Googleが定義したユーザー体験を数値で評価するための指標群であり、表示速度を示す<strong>LCP</strong>、操作への応答性を示す<strong>INP</strong>、視覚的な安定性を示す<strong>CLS</strong>の3つが中心となる。感覚的な「速い・遅い」を客観的な数値に変換できることが、この指標の価値である。</p>
+            <p>一人前のエンジニアがこれを知っておくべき理由は、パフォーマンス改善の議論を「なんとなく重い気がする」から「LCPが3秒を超えている」という具体的な会話に変えられるからだ。数値化された指標があることで、検索順位への影響やビジネス指標との関連づけもしやすくなる。</p>
+            <p>実務では、まず<strong>計測ツールの使い方</strong>を身につけて自分のサイトの現状を把握することが出発点になる。指標がすべて重要というわけではなく、サイトの特性に応じて<strong>改善優先度の付け方</strong>を判断する必要がある。たとえば画像の多いサイトならLCP、インタラクションの多いアプリならINPを優先するといった具合だ。数値だけを追いかけて本質的なユーザー体験の改善を見失わないようにする視点も欠かせない。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>PageSpeed Insightsで自分のサイト（または任意の公開サイト）のLCP・INP・CLSを計測し、最も改善優先度の高い指標を1つ選んで実際に改善策（画像圧縮やサイズ指定など）を適用し、再計測して数値の変化を確認する。所要目安60分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://www.tam-tam.co.jp/tipsnote/html_css/post10205.html">CSSの設計 – FLOCSSをベースにしたファイルの構成と命名規則を考える</a>
+          <span class="domain">tam-tam.co.jp</span>
+          <p class="desc">CSS設計手法の考え方と命名規則の実務的な組み立て方を学べる</p>
+        </li>
+        <li>
+          <a href="https://ics.media/entry/230821/">アクセシビリティーに考慮するHTMLコーディング - WAI-ARIAでスクリーンリーダーの読み上げがこう変わる</a>
+          <span class="domain">ics.media</span>
+          <p class="desc">ARIA属性がスクリーンリーダーの読み上げに与える実際の変化を学べる</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/ktdatascience/items/aa2db8e9018d1f75a7fc">【React】コンポーネント・Props・Stateを理解する</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">コンポーネント設計の基本となるProps/Stateの分離を学べる</p>
+        </li>
+        <li>
+          <a href="https://zenn.dev/gagaga/articles/state-management">「状態管理」って何？</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">ローカル/グローバル/サーバー状態の分類と使い分けの考え方を学べる</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/ktst79/items/8bc732eb12c7b86a257a">Core Web Vitals を測ってサイトを改善しよう</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">計測ツールの使い方と指標に基づく改善の進め方を学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="g1.html">← 言語・型システムの実務理解</a>
+      <a href="g3.html">バックエンド実務 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

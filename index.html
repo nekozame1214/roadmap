@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI活用開発 学習資料 — 一覧</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.75;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:1180px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+
+.masthead{padding:60px 0 26px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 18px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(28px,4.6vw,46px);line-height:1.25;margin:0 0 14px;letter-spacing:.02em}
+.lede{max-width:64ch;color:var(--ink2);font-size:14.5px;margin:0}
+.lede b{color:var(--ink);font-weight:600}
+
+.howto{border:1px solid var(--rule);background:var(--card);padding:18px 20px;margin:34px 0 8px}
+.howto h3{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--ink3);margin:0 0 10px;font-weight:400}
+.howto p{margin:0;color:var(--ink2);font-size:13px}
+.howto p+p{margin-top:8px}
+
+.stats{display:flex;gap:28px;flex-wrap:wrap;margin:30px 0 6px;font-family:var(--mono)}
+.stat-num{font-size:clamp(22px,3vw,30px);color:var(--ink);font-variant-numeric:tabular-nums;line-height:1}
+.stat-label{font-size:10.5px;color:var(--ink3);letter-spacing:.1em;margin-top:6px}
+
+.section-title{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--ink3);margin:44px 0 18px;border-top:1px solid var(--rule2);padding-top:20px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.card{background:var(--card);padding:24px 22px;display:flex;flex-direction:column;gap:12px;text-decoration:none;color:inherit;transition:background .15s}
+.card:hover{background:#fff}
+.card-top{display:flex;align-items:baseline;gap:14px}
+.card-n{font-family:var(--mono);font-size:32px;color:var(--rule);letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.card-t{font-family:var(--mincho);font-size:17px;font-weight:600;line-height:1.4;letter-spacing:.01em}
+.card-why{font-size:12.8px;color:var(--ink2);line-height:1.8;flex:1}
+.card-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.card-roles{display:flex;gap:4px;flex-wrap:wrap}
+.role-chip{font-size:10px;color:var(--ink3);background:var(--paper);border:1px solid var(--rule2);border-radius:3px;padding:2px 6px}
+.card-count{font-family:var(--mono);font-size:11px;color:var(--ink3);white-space:nowrap}
+.card-go{font-family:var(--mono);font-size:11px;color:var(--shu);white-space:nowrap}
+
+.closing{border-top:1px solid var(--ink);padding-top:28px;margin-top:50px}
+.closing h2{font-family:var(--mincho);font-size:20px;font-weight:600;margin:0 0 14px}
+.closing p{color:var(--ink2);font-size:13.5px;max-width:66ch;margin:0 0 10px}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:36px 0 20px}
+  .navbar-inner{padding:9px 16px}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="ai-skillset.html" class="primary">チェックリストを開く（ai-skillset.html）</a>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">AI-Assisted Engineering / Study Guide Index</p>
+    <h1>AI活用開発ロードマップ 学習資料</h1>
+    <p class="lede"><b>ai-skillset.html</b>（チェックリスト形式のロードマップ）の各項目を、読んで理解できる解説文にした学習資料です。「<b>エンジニアとして一人前になる</b>」「<b>AIを組織に導入するのに十分な力をつける</b>」の二つを目指す12レイヤー・226項目を、レイヤーごとに1本の記事として収録しています。</p>
+  </header>
+
+  <section class="howto">
+    <h3>使い方</h3>
+    <p>チェックリスト（ai-skillset.html）で「何を身につけるべきか」を俯瞰し、わからない項目・深めたい項目が出てきたら、このページから該当レイヤーの学習資料を開いて読む、という往復を想定しています。各学習資料のページ上部からもチェックリストの該当レイヤーへ、逆にチェックリスト側の各レイヤーからもこの学習資料へ相互にリンクしています。</p>
+    <p>Layer 00 から Layer 11 まで、下にある方が積み上げの土台、上にある方が応用・組織展開の層です。順番に読む必要はなく、必要なところから拾い読みしてください。</p>
+  </section>
+
+  <div class="stats">
+    <div><div class="stat-num">12</div><div class="stat-label">LAYERS</div></div>
+    <div><div class="stat-num">226</div><div class="stat-label">ITEMS</div></div>
+    <div><div class="stat-num">1,302</div><div class="stat-label">SUB TAGS</div></div>
+  </div>
+
+  <p class="section-title">01 — 一人前のエンジニアになる（実務基盤）</p>
+  <div class="grid">
+    <a class="card" href="study-00.html">
+      <div class="card-top"><span class="card-n">00</span><span class="card-t">エンジニアリング基礎</span></div>
+      <p class="card-why">AIが生成したコードの妥当性を判断するための土台。ここが弱いと検証ができず、AI活用のROI（投資対効果）が逆転する。</p>
+      <div class="card-meta">
+        <div class="card-roles"><span class="role-chip">一般エンジニア</span><span class="role-chip">テックリード</span><span class="role-chip">プラットフォーム</span></div>
+        <span class="card-count">48 items</span>
+      </div>
+      <div class="card-go">読む →</div>
+    </a>
+    <a class="card" href="study-01.html">
+      <div class="card-top"><span class="card-n">01</span><span class="card-t">実務ソフトウェア開発力</span></div>
+      <p class="card-why">「一人前のエンジニア」を構成する具体の力。CS基礎を実際のプロダクトコードに変換し、動くものを速く安全に届けるための実務スキル。</p>
+      <div class="card-meta">
+        <div class="card-roles"><span class="role-chip">一般エンジニア</span><span class="role-chip">テックリード</span></div>
+        <span class="card-count">28 items</span>
+      </div>
+      <div class="card-go">読む →</div>
+    </a>
+    <a class="card" href="study-02.html">
+      <div class="card-top"><span class="card-n">02</span><span class="card-t">プロジェクト遂行・組織コミュニケーション</span></div>
+      <p class="card-why">技術力だけでは「一人前」にならない。要件を掴み、計画に落とし、人を巻き込みながら届けきる力。AI導入の推進力にも直結する。</p>
+      <div class="card-meta">
+        <div class="card-roles"><span class="role-chip">一般エンジニア</span><span class="role-chip">テックリード</span><span class="role-chip">マネージャー</span></div>
+        <span class="card-count">28 items</span>
+      </div>
+      <div class="card-go">読む →</div>
+    </a>
+  </div>
+
+  <p class="section-title">02 — AIそのものを理解し、使いこなす</p>
+  <div class="grid">
+    <a class="card" href="study-03.html">
+      <div class="card-top"><span class="card-n">03</span><span class="card-t">LLM・AIそのものの理解</span></div>
+      <p class="card-why">道具の内部構造を知らないまま使うと、失敗の原因を切り分けられない。LLM（大規模言語モデル）の性質を前提に設計する。</p>
+      <div class="card-meta">
+        <div class="card-roles"><span class="role-chip">一般エンジニア</span><span class="role-chip">テックリード</span><span class="role-chip">AI推進</span></div>
+        <span class="card-count">15 items</span>
+      </div>
+      <div class="card-go">読む →</div>
+    </a>
+    <a class="card" href="study-04.html">
+      <div class="card-top"><span class="card-n">04</span><span class="card-t">プロンプト／コンテキストエンジニアリング</span></div>
+      <p class="card-why">最も再現性が高く、最も組織展開しやすい層。プロンプト（AIへの指示文）を資産化できるかで差がつく。</p>
+      <div class="card-meta">
+        <div class="card-roles"><span class="role-chip">一般エンジニア</span><span class="role-chip">テックリード</span><span class="role-chip">AI推進</span></div>
+        <span class="card-count">13 items</span>
+      </div>
+      <div class="card-go">読む →</div>
+    </a>
+    <a class="card" href="study-05.html">
+      <div class="card-top"><span class="card-n">05</span><span class="card-t">AIコーディング実務</span></div>
+      <p class="card-why">日々の開発でAIを使い切るための手つき。ツールの操作方法ではなく、進め方そのものの設計。</p>
+      <div class="card-meta">
+        <div class="card-roles"><span class="role-chip">一般エンジニア</span><span class="role-chip">テックリード</span></div>
+        <span class="card-count">15 items</span>
+      </div>
+      <div class="card-go">読む →</div>
+    </a>
+    <a class="card" href="study-06.html">
+      <div class="card-top"><span class="card-n">06</span><span class="card-t">エージェント設計・オーケストレーション</span></div>
+      <p class="card-why">「補完」から「委任」へ移る境界。エージェント（自律的にツールを使って進むAI）を安全に自走させる設計技術。</p>
+      <div class="card-meta">
+        <div class="card-roles"><span class="role-chip">テックリード</span><span class="role-chip">AI推進</span><span class="role-chip">プラットフォーム</span></div>
+        <span class="card-count">12 items</span>
+      </div>
+      <div class="card-go">読む →</div>
+    </a>
+    <a class="card" href="study-07.html">
+      <div class="card-top"><span class="card-n">07</span><span class="card-t">評価（Evals）</span></div>
+      <p class="card-why">「なんとなく良くなった」を終わらせる層。Evals（出力品質を測る評価の仕組み）が無いと改善が運になる。</p>
+      <div class="card-meta">
+        <div class="card-roles"><span class="role-chip">テックリード</span><span class="role-chip">AI推進</span></div>
+        <span class="card-count">10 items</span>
+      </div>
+      <div class="card-go">読む →</div>
+    </a>
+  </div>
+
+  <p class="section-title">03 — AIを組織に導入するのに十分な力をつける</p>
+  <div class="grid">
+    <a class="card" href="study-08.html">
+      <div class="card-top"><span class="card-n">08</span><span class="card-t">セキュリティ・ガバナンス</span></div>
+      <p class="card-why">組織展開の可否を実際に決める層。ガバナンス（統制の仕組み）は禁止ではなく、安全に許可するための設計。</p>
+      <div class="card-meta">
+        <div class="card-roles"><span class="role-chip">テックリード</span><span class="role-chip">AI推進</span><span class="role-chip">プラットフォーム</span><span class="role-chip">マネージャー</span></div>
+        <span class="card-count">10 items</span>
+      </div>
+      <div class="card-go">読む →</div>
+    </a>
+    <a class="card" href="study-09.html">
+      <div class="card-top"><span class="card-n">09</span><span class="card-t">コスト・パフォーマンス</span></div>
+      <p class="card-why">技術的に成功しても経済的に破綻すれば止まる。継続可能性を担保する層。</p>
+      <div class="card-meta">
+        <div class="card-roles"><span class="role-chip">AI推進</span><span class="role-chip">プラットフォーム</span><span class="role-chip">マネージャー</span></div>
+        <span class="card-count">8 items</span>
+      </div>
+      <div class="card-go">読む →</div>
+    </a>
+    <a class="card" href="study-10.html">
+      <div class="card-top"><span class="card-n">10</span><span class="card-t">組織能力</span></div>
+      <p class="card-why">「組織全体で使える」ための本体。個人スキルの合計では到達できない領域。</p>
+      <div class="card-meta">
+        <div class="card-roles"><span class="role-chip">AI推進</span><span class="role-chip">マネージャー</span><span class="role-chip">プラットフォーム</span></div>
+        <span class="card-count">31 items</span>
+      </div>
+      <div class="card-go">読む →</div>
+    </a>
+    <a class="card" href="study-11.html">
+      <div class="card-top"><span class="card-n">11</span><span class="card-t">マインドセット・ヒューマンスキル</span></div>
+      <p class="card-why">最後に効いてくる差分。習得ではなく習慣として定着させる領域。</p>
+      <div class="card-meta">
+        <div class="card-roles"><span class="role-chip">全ロール共通</span></div>
+        <span class="card-count">8 items</span>
+      </div>
+      <div class="card-go">読む →</div>
+    </a>
+  </div>
+
+  <section class="closing">
+    <h2>読み方の目安</h2>
+    <p>Layer 00〜02 は職種によらず全員の土台。<strong>まずここを固める</strong>。Layer 03〜07 はAIそのものと日々のAI活用開発の実務層で、一般エンジニアからAI推進担当まで幅広く関わる。Layer 08〜11 は「組織にAIを導入する」ための層で、テックリード・AI推進担当・マネージャーが重心を置くべき領域。</p>
+    <p>各記事はチェックリストの該当項目と1対1で対応しており、どの用語タグ（chip表示）も本文中で触れています。読んで理解したら、ai-skillset.html に戻ってチェックを入れてください。</p>
+  </section>
+</div>
+
+</body>
+</html>

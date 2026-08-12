@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ビジネス・ドメイン理解 — プロジェクト遂行・組織コミュニケーション — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-02.html">← Layer 02 概要</a>
+    <a href="../ai-skillset.html#L02">チェックリストで見る</a>
+    <span class="strip"><a href="../study-00.html">00 基礎</a>
+    <a href="../study-01.html">01 実務開発力</a>
+    <a href="../study-02.html" class="current">02 プロジェクト遂行</a>
+    <a href="../study-03.html">03 LLM理解</a>
+    <a href="../study-04.html">04 プロンプト</a>
+    <a href="../study-05.html">05 実務</a>
+    <a href="../study-06.html">06 エージェント</a>
+    <a href="../study-07.html">07 評価</a>
+    <a href="../study-08.html">08 セキュリティ</a>
+    <a href="../study-09.html">09 コスト</a>
+    <a href="../study-10.html">10 組織</a>
+    <a href="../study-11.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 02 / プロジェクト遂行・組織コミュニケーション — 7 of 7</p>
+    <h1>ビジネス・ドメイン理解</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>事業モデルの理解</h3>
+      <div class="chips"><span class="chip">収益構造の把握</span>
+            <span class="chip">顧客セグメントの理解</span>
+            <span class="chip">競合との違いの把握</span>
+            <span class="chip">事業フェーズごとの優先事項の違い</span></div>
+      <div class="prose"><p>事業モデルの理解とは、自分が開発しているプロダクトがどのように収益を生み、事業として成立しているかを把握することである。コードの外側にあるこの理解が、技術的判断の質を大きく左右する。</p>
+            <p>収益構造の把握ができていれば、なぜこの機能が優先されるのかという背景が見えるようになり、単なる作業者ではなく事業の当事者として意思決定に関われるようになる。あわせて、誰に向けたプロダクトかという顧客セグメントの理解も欠かせない。</p>
+            <p>競合との違いの把握は、自社の強みをどこで技術的に伸ばすべきかを判断する材料になる。また立ち上げ期と成熟期では優先すべきことが異なるため、事業フェーズごとの優先事項の違いを理解していないと、今のフェーズにそぐわない過剰な設計に時間を使ってしまうことがある。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自社(または自分のプロダクト)の収益構造を1枚の図か箇条書きでまとめ、自分が担当する機能がその収益にどう繋がっているかを1文で説明してみる。所要時間の目安: 30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>KPI・数値感覚</h3>
+      <div class="chips"><span class="chip">自分の仕事が影響するKPIの特定</span>
+            <span class="chip">コストと売上への感度</span>
+            <span class="chip">数値で語る習慣</span>
+            <span class="chip">過大な数値主張への注意</span></div>
+      <div class="prose"><p>KPI・数値感覚とは、自分の日々の技術的な仕事が、事業上のどの数字に影響しているかを意識する感覚である。この感覚がないと、技術的に正しい判断が事業にとって正しい判断とは限らないことに気づけない。</p>
+            <p>まず自分の仕事が影響するKPIの特定を行い、自分の変更がどの指標に効いているのかを把握する。あわせて、施策のコストと売上への感度を持つことで、費用対効果の議論に対等に参加できるようになる。</p>
+            <p>実務では数値で語る習慣を身につけることが説得力につながるが、一方で根拠の薄い数値を都合よく持ち出す過大な数値主張への注意も必要である。誇張された数字は一時的に説得力を持っても、後で実績と食い違えば信頼を失う原因になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分の直近のタスクや機能が影響していると思われるKPIを1つ特定し、その数値が実際にどう動いているかをダッシュボードや担当者への質問で確認してみる。所要時間の目安: 30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>顧客理解</h3>
+      <div class="chips"><span class="chip">利用者インタビューへの参加</span>
+            <span class="chip">問い合わせ・サポート内容の把握</span>
+            <span class="chip">利用データからの示唆抽出</span>
+            <span class="chip">顧客視点でのプロダクト評価</span></div>
+      <div class="prose"><p>顧客理解とは、実際にプロダクトを使う人々が何を求め、何に困っているかを直接知ろうとする姿勢である。要件がすでに整理された状態で開発だけを担当していると、顧客の実像から距離が生まれやすい。</p>
+            <p>機会があれば利用者インタビューへの参加を通じて、要件書には現れない生の声に触れることが理解を深める。また問い合わせ・サポート内容の把握は、既存の課題を知る手軽で継続的な情報源になる。</p>
+            <p>定性的な情報だけでなく、利用データからの示唆抽出によって、実際の利用傾向という定量的な裏付けを得ることも重要である。こうして得た理解をもとに、作り手目線ではなく顧客視点でのプロダクト評価を習慣化することが、独りよがりでない開発判断につながる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自社サービスへの問い合わせやサポート内容(なければ類似サービスのレビュー)を5件読み、共通する不満・要望のパターンを1つ見つけて書き出す。所要時間の目安: 30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>技術面からの意思決定貢献</h3>
+      <div class="chips"><span class="chip">実現可能性の早期提示</span>
+            <span class="chip">技術選定が事業に与える影響の説明</span>
+            <span class="chip">短期対応と長期設計のバランス提案</span>
+            <span class="chip">非機能要件のビジネス価値への翻訳</span></div>
+      <div class="prose"><p>技術面からの意思決定貢献とは、事業上の意思決定に対して、エンジニアとして能動的に判断材料を提供することである。決まった仕様を黙々と実装するだけでなく、意思決定の場に技術的な視点を持ち込む姿勢が求められる。</p>
+            <p>企画段階で相談があった際に実現可能性の早期提示ができれば、後になって「実は技術的に難しかった」という手戻りを防げる。またある技術選定が事業に与える影響の説明ができることは、AI導入の是非を議論する場面でも中心的な役割を果たす。</p>
+            <p>目先の対応で急場をしのぐか、将来を見据えて作り直すかは常に難しい判断であり、短期対応と長期設計のバランス提案ができることが、信頼されるエンジニアの条件になる。さらに、性能やセキュリティといった非機能要件のビジネス価値への翻訳ができれば、経営層にも技術投資の意義が伝わり、事業の意思決定そのものに技術者として貢献できる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>直近の企画や仕様検討の場面を1つ思い出し、自分が技術的な実現可能性を早めに伝えていたら防げた手戻りがなかったかを振り返り、次回のためのチェック項目を1つ作る。所要時間の目安: 20分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://tech.layerx.co.jp/entry/2025/03/28/141628">ドメイン知識をプロダクト開発に最大限活かす - 経理バックオフィスSaaS開発の現場から</a>
+          <span class="domain">tech.layerx.co.jp</span>
+          <p class="desc">顧客ヒアリングを通じてドメイン知識を深める実践例が学べる</p>
+        </li>
+        <li>
+          <a href="https://techblog.goinc.jp/entry/2026/05/15/150901">エンジニアはドメイン知識とどう向き合うべきか？</a>
+          <span class="domain">techblog.goinc.jp</span>
+          <p class="desc">ドメイン知識習得における実務上の悩みと向き合い方が学べる</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/TOMON_9912/items/1c6ba4e0f4589a8ea2de">【ビジネス】エンジニアのためのビジネス用語集</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">北極星指標やLTV・CACなどエンジニアが知るべきビジネス指標が学べる</p>
+        </li>
+        <li>
+          <a href="https://freelance-board.com/journals/detail/470">エンジニアKPI完全ガイド｜目標設定の具体例と成果を最大化する運用法、成功事例を解説</a>
+          <span class="domain">freelance-board.com</span>
+          <p class="desc">エンジニア自身のKPI設定と運用の具体例が学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="g6.html">← g6 前のグループ</a>
+      <a href="../study-02.html">レイヤー概要に戻る →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

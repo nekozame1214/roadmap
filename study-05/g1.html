@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>任せ方 — AIコーディング実務 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-05.html">← Layer 05 概要</a>
+    <a href="../ai-skillset.html#L05">チェックリストで見る</a>
+    <span class="strip">
+      <a href="../study-00.html">00 基礎</a>
+      <a href="../study-01.html">01 実務開発力</a>
+      <a href="../study-02.html">02 プロジェクト遂行</a>
+      <a href="../study-03.html">03 LLM理解</a>
+      <a href="../study-04.html">04 プロンプト</a>
+      <a href="../study-05.html" class="current">05 実務</a>
+      <a href="../study-06.html">06 エージェント</a>
+      <a href="../study-07.html">07 評価</a>
+      <a href="../study-08.html">08 セキュリティ</a>
+      <a href="../study-09.html">09 コスト</a>
+      <a href="../study-10.html">10 組織</a>
+      <a href="../study-11.html">11 マインド</a>
+    </span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 05 / AIコーディング実務 — 1 of 4</p>
+    <h1>任せ方</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>仕様の言語化</h3>
+      <div class="chips"><span class="chip">入力と出力の定義</span>
+            <span class="chip">受け入れ条件<span class="gl">完了とみなす条件</span>の明記</span>
+            <span class="chip">エッジケース<span class="gl">例外的な入力</span>の列挙</span>
+            <span class="chip">非機能要件<span class="gl">性能・安全性</span>の指定</span>
+            <span class="chip">既存コードの参照先を示す</span>
+            <span class="chip">使ってよいライブラリの指定</span>
+            <span class="chip">変更してはいけない箇所の指定</span></div>
+      <div class="prose"><p>仕様の言語化とは、頭の中にある要求を、AIが誤解なく実行できる文章に変換する作業である。核となるのは入力と出力の定義で、「何を渡すと何が返ってくるべきか」をまず固定する。ここが曖昧なまま指示を出すと、AIは字面から最もそれらしい解釈を選んでしまい、意図とずれた実装が生まれる。</p>
+            <p>AIコーディングでは、指示の質がそのまま出力の質に直結する。人間のペアプログラマーであれば会話の中で暗黙の前提を補ってくれるが、AIは指示に書かれていないことを推測はしても保証はしない。だからこそ受け入れ条件<span class="gl">完了とみなす条件</span>の明記を行い、「この状態になれば完了」というゴールを共有しておく必要がある。これはコードレビューの負担を減らすだけでなく、AI自身が自己チェックする基準にもなる。</p>
+            <p>実務で差が出るのはエッジケース<span class="gl">例外的な入力</span>の列挙と非機能要件<span class="gl">性能・安全性</span>の指定だ。正常系だけを書いた仕様は、AIにとって「例外は考えなくてよい」というメッセージに等しく、null入力や巨大データでの挙動が抜け落ちやすい。性能要件やセキュリティ要件も同様で、書かなければ存在しないものとして扱われる。加えて既存コードの参照先を示す、使ってよいライブラリの指定、変更してはいけない箇所の指定をセットで伝えると、AIは既存の設計思想を踏み外さずに実装できる。逆にこれらを省略すると、車輪の再発明や不要な依存追加につながりやすい。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>手元の小さな修正タスクを1つ選び、実装を依頼する前に「入力/出力」「受け入れ条件」「エッジケース3つ以上」「触ってよい/いけないファイル」を箇条書きにした仕様メモを書く。その仕様メモをそのままAIに渡した場合と、口頭一文で依頼した場合の出力を見比べ、差分の質をメモする。所要目安45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>タスク分解</h3>
+      <div class="chips"><span class="chip">1コミット単位に割る</span>
+            <span class="chip">依存順に並べる</span>
+            <span class="chip">調査と実装を分ける</span>
+            <span class="chip">各ステップに完了条件を付ける</span>
+            <span class="chip">並行できる作業を見分ける</span>
+            <span class="chip">大きすぎるタスクの兆候を知る</span></div>
+      <div class="prose"><p>タスク分解は、大きな要求を、AIが一度に確実にこなせる粒度の作業に切り分ける技術である。目安になるのは1コミット単位に割ることで、レビューしやすく、失敗しても戻しやすい大きさに揃える。</p>
+            <p>AIは一度の指示に含める要素が増えるほど、途中で文脈を見失ったり、一部だけ雑に処理したりする傾向がある。人間側でタスクを適切に分解しておけば、AIの実行範囲を狭めて精度を上げられるだけでなく、途中経過を人間が確認できるチェックポイントも増える。これは複雑な機能開発をAIに任せる上での実務上の前提条件といえる。</p>
+            <p>分解の際は依存順に並べることが基本で、後続タスクが前提とする成果物を先に作らせる。また調査と実装を分けるのも重要で、まず現状のコードやライブラリ仕様を調べさせてから実装に着手させると、誤った前提のまま書き進めるリスクが減る。各ステップに完了条件を付けておけば、AIが「終わった」と自己申告した内容を機械的に検証できる。並行できる作業を見分けて複数セッションに振り分けると効率が上がる一方、大きすぎるタスクの兆候(指示が長文化する、途中で目的を見失った出力が増える)に気づいたら、迷わずさらに分割する判断が求められる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>中規模の機能追加タスクを1つ選び、着手前に「調査」「実装」「テスト」の3段階、かつ各段階を1コミットで完結する単位に分解した計画表を作る。分解した計画に沿ってAIに1ステップずつ依頼し、いきなり全体を一括依頼した場合とレビューのしやすさを比べる。所要目安60分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>任せる／自分で書くの見極め</h3>
+      <div class="chips"><span class="chip">定型作業<span class="gl">テスト・変換・雛形</span>は任せる</span>
+            <span class="chip">設計判断が必要な箇所は自分で決める</span>
+            <span class="chip">ドメイン知識依存の箇所は指示を厚くする</span>
+            <span class="chip">セキュリティ上の要所は自分で書く</span>
+            <span class="chip">既存規約との整合が必要な箇所</span></div>
+      <div class="prose"><p>すべてをAIに書かせる、あるいはすべてを自分で書くのではなく、タスクの性質によって主導権を切り替える判断力が実務では問われる。基準になるのは再現性の高さで、定型作業<span class="gl">テスト・変換・雛形</span>は任せることで、人間の時間をより判断力が要る作業に回せる。</p>
+            <p>この見極めが甘いと、二つの失敗パターンに陥る。一つは本来人間が決めるべき設計判断をAIに丸投げしてしまい、場当たり的な構造が積み上がること。もう一つは逆に、任せれば速い定型作業まで律儀に手作業で行い、AIの価値を活かせないことである。適切な見極めは、AI活用の生産性そのものを左右する。</p>
+            <p>設計判断が必要な箇所、たとえばアーキテクチャの選択やAPIの境界設計は自分で決める。ドメイン知識依存の箇所は指示を厚くすることで精度を補う。セキュリティ上の要所、たとえば認証・認可や暗号化の実装は自分で書くのが原則で、AI任せにした結果の脆弱性は見落とされやすい。既存規約との整合が必要な箇所も、社内独自の慣習をAIが知らないことが多いため、人間が主導したほうが手戻りが少ない。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>直近1週間のタスクを棚卸しし、「定型作業」「設計判断」「セキュリティ関連」「既存規約に依存」の4種に分類する表を作る。定型作業に分類したものを1つ選んでAIに任せ、設計判断に分類したものは自分で決めてからAIに実装だけ依頼し、両者の指示の厚みの違いを比較する。所要目安40分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>進め方</h3>
+      <div class="chips"><span class="chip">計画を先に出させて承認する</span>
+            <span class="chip">小さくコミットする</span>
+            <span class="chip">差分レビュー前提で進める</span>
+            <span class="chip">テストを先に書かせる</span>
+            <span class="chip">失敗したら出力ではなく指示を直す</span>
+            <span class="chip">詰まったら会話をやり直す</span>
+            <span class="chip">作業ログを残す</span></div>
+      <div class="prose"><p>進め方とは、個々のタスクをAIに実行させる際の、開始から完了までの一連の手順の型である。計画を先に出させて承認するところから始めるのが基本で、いきなり実装させるのではなく、AIがどう進めるつもりかを言語化させてからゴーサインを出す。</p>
+            <p>この型が身についているかどうかで、AI活用の安定性が大きく変わる。行き当たりばったりに指示を出すと、出力の当たり外れが大きくなり、結果としてレビューコストが膨らむ。逆に一定の型で進めれば、AIの出力にばらつきがあっても早期に軌道修正でき、被害を小さく抑えられる。</p>
+            <p>小さくコミットし、差分レビュー前提で進めることで、問題のある変更をすぐに特定できる。テストを先に書かせることで、実装の正しさを客観的に測る基準を先に固定できる。うまくいかないときの対処も重要で、失敗したら出力ではなく指示を直すという原則を守る。出力を手で直し続けると同じ失敗を繰り返すだけだが、指示そのものを見直せば根本原因に届く。詰まったら会話をやり直すことも有効で、文脈が汚れたセッションを引きずるより、要点を整理して仕切り直すほうが早いことが多い。最後に作業ログを残す習慣は、後から振り返って指示の何が良かったかを学ぶ材料になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>1つのタスクで「①計画を出させて承認→②テストを先に書かせる→③小さくコミット→④差分レビュー」の順を厳密に守って進めてみる。途中でAIの出力がずれたら、出力を手直しせず指示文だけを直して再生成させ、両方のやり方の手戻り量を比較したメモを残す。所要目安60〜90分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>レガシーコードの改修</h3>
+      <div class="chips"><span class="chip">仕様不明コードの挙動推測支援</span>
+            <span class="chip">挙動を変えないための回帰テスト先行作成</span>
+            <span class="chip">段階的な置き換え計画</span>
+            <span class="chip">ドキュメント欠如を補う質問設計</span>
+            <span class="chip">改修前後の差分説明を求める</span></div>
+      <div class="prose"><p>レガシーコードの改修とは、仕様書もテストも乏しい既存コードに手を入れる作業を指す。ここでAIが力を発揮するのは仕様不明コードの挙動推測支援で、複雑な条件分岐やコメントのない処理を読み解かせ、何をしているかの仮説を立てさせることができる。</p>
+            <p>レガシー改修は多くの現場で日常的に発生する作業でありながら、リスクが高い。AIを使えば調査のスピードは上がるが、使い方を誤ると「動いていた挙動」を壊すリスクも同時に高まる。だからこそ、単に書き換えさせるのではなく、安全網を張ってから進める姿勢が欠かせない。</p>
+            <p>実務では、挙動を変えないための回帰テスト先行作成が最優先になる。現状の入出力をテストとして固定してから改修に着手すれば、AIの変更が意図せぬ挙動変化を起こしていないかを機械的に検出できる。大きな改修は段階的な置き換え計画に分け、一気に書き換えない。ドキュメント欠如を補う質問設計、つまりAIに「このコードはなぜこう書かれているのか」を推測させたり、関連コードを横断的に調べさせたりする問いかけも有効だ。仕上げには改修前後の差分説明を求めることで、意図しない副作用がないかを人間が検証しやすくなる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>担当プロダクトの中で仕様が不明な古い関数を1つ選び、AIに挙動を推測させて説明させる。その説明をもとに現状の入出力を固定する回帰テストを先に書かせ、テストが通る状態を確認してから初めて改修を依頼する。最後に改修前後の差分をAIに説明させ、意図しない挙動変化がないか照合する。所要目安90分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>大規模リファクタリングの進め方</h3>
+      <div class="chips"><span class="chip">影響範囲の洗い出し</span>
+            <span class="chip">移行計画の分割とマイルストーン化</span>
+            <span class="chip">ストラングラーパターン<span class="gl">段階的に置き換える</span>の適用</span>
+            <span class="chip">途中状態でもビルド・テストが通る状態を維持</span>
+            <span class="chip">元に戻せる単位での実施</span></div>
+      <div class="prose"><p>大規模リファクタリングとは、システム全体や広い範囲のモジュールにまたがる構造変更を指す。個別のコード改修と違い、まず影響範囲の洗い出しから始めないと、どこまで手を入れるべきかの境界が定まらない。</p>
+            <p>規模が大きいタスクほどAIに一度で任せるのは危険で、途中で破綻しても後戻りできない進め方は避けるべきである。大規模リファクタリングを安全に進められるかどうかは、AI活用が「小さな効率化」で終わるか「組織のコード基盤を底上げする力」になるかの分かれ目でもある。</p>
+            <p>実践では移行計画の分割とマイルストーン化を行い、ストラングラーパターン<span class="gl">段階的に置き換える</span>の適用によって新旧の実装を共存させながら少しずつ置き換えていく。この間、途中状態でもビルド・テストが通る状態を維持することが絶対条件で、これが崩れるとチーム全体の開発が止まる。すべての変更は元に戻せる単位での実施を徹底し、AIが生成した大きな変更を一度に取り込まないようにする。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>複数ファイルにまたがる小規模なリファクタリング対象(例: 共通ユーティリティの置き換え)を選び、AIに影響範囲(呼び出し箇所一覧)を洗い出させてからマイルストーンを3段階以上に分けた移行計画を書かせる。1マイルストーン分だけ実際に適用し、既存呼び出しと新実装を共存させた状態でビルド・テストが通ることを確認する。所要目安90分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://www.uni-log.jp/ai/prompt-basics-coding.html">コーディング依頼で失敗しない！AIプロンプト基本パターン集</a>
+          <span class="domain">uni-log.jp</span>
+          <p class="desc">コーディングをAIに依頼する際の仕様の伝え方・プロンプトの型が学べる</p>
+        </li>
+        <li>
+          <a href="https://graffer-aistudio.jp/blog/engineer-prompt">【エンジニアの生成AI仕事術】コーディング、実装方針の壁打ちに使えるプロンプト集</a>
+          <span class="domain">graffer-aistudio.jp</span>
+          <p class="desc">実装方針の相談やタスクの進め方をAIと詰めるプロンプト例が学べる</p>
+        </li>
+        <li>
+          <a href="https://zenn.dev/shineos/articles/ai-assisted-refactoring-guide">「触るのが怖い」レガシーコードをAIと安全に改善する実践ステップ</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">回帰テスト先行作成など、レガシーコード改修を安全に進める手順が学べる</p>
+        </li>
+        <li>
+          <a href="https://developersblog.dmm.com/entry/2025/10/09/110000">AIエージェントで挑んだ大規模リファクタリング</a>
+          <span class="domain">developersblog.dmm.com</span>
+          <p class="desc">大規模リファクタリングをAIエージェントと進めた実際の事例が学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../study-05.html">← レイヤー概要</a>
+      <a href="g2.html">検証 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

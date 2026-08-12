@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>データ構造 — エンジニアリング基礎 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-00.html">← Layer 00 概要</a>
+    <a href="../ai-skillset.html#L00">チェックリストで見る</a>
+    <span class="strip"><a href="../study-00.html" class="current">00 基礎</a>
+    <a href="../study-01.html">01 実務開発力</a>
+    <a href="../study-02.html">02 プロジェクト遂行</a>
+    <a href="../study-03.html">03 LLM理解</a>
+    <a href="../study-04.html">04 プロンプト</a>
+    <a href="../study-05.html">05 実務</a>
+    <a href="../study-06.html">06 エージェント</a>
+    <a href="../study-07.html">07 評価</a>
+    <a href="../study-08.html">08 セキュリティ</a>
+    <a href="../study-09.html">09 コスト</a>
+    <a href="../study-10.html">10 組織</a>
+    <a href="../study-11.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 00 / エンジニアリング基礎 — 1 of 12</p>
+    <h1>データ構造</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>線形データ構造</h3>
+      <div class="chips"><span class="chip">配列<span class="gl">連続した箱に順番に入れる</span></span>
+            <span class="chip">連結リスト<span class="gl">要素が次を指してつながる</span></span>
+            <span class="chip">スタック<span class="gl">後入れ先出し</span></span>
+            <span class="chip">キュー<span class="gl">先入れ先出し</span></span>
+            <span class="chip">デック<span class="gl">両端から出し入れ</span></span>
+            <span class="chip">リングバッファ<span class="gl">固定長で循環する</span></span></div>
+      <div class="prose"><p>配列・連結リスト・スタック・キュー・デック・リングバッファなど、データを一列に並べて扱う最も基本的な構造群である。配列は連続したメモリ領域に要素を順番に並べるため添字アクセスが速く、連結リストは各要素が次の要素への参照を持つことで挿入・削除を柔軟にする。スタックは後入れ先出し、キューは先入れ先出し、デックは両端からの出し入れを許し、リングバッファは固定長のバッファを循環的に使い回す。</p>
+            <p>これらはAPIの内部実装からブラウザの履歴管理、タスクキューまであらゆる場所に登場する土台であり、一人前のエンジニアはコードを読んだときに「なぜここでスタックではなくキューを選んだのか」を即座に理解できる必要がある。AIが生成したコードがリストの中間挿入を配列で行っているような非効率な選択をしていないか、計算量の観点から気づけるかどうかもこの理解にかかっている。</p>
+            <p>実務では言語標準ライブラリがどの構造を裏で使っているかを知ることが重要で、例えばPythonのlistは動的配列でありリングバッファではない、といった細部の勘違いがパフォーマンス障害の原因になる。AIに実装を任せる場合も、大量データの先頭挿入が頻発する処理で配列を使わせていないかなど、レビュー時にこの土台知識がないと気づけない落とし穴が多い。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>言語の配列(list/ArrayList)と連結リストを自作し、先頭への挿入を10万回行うベンチマークを取って計算量の違いを実測する。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>連想・集合</h3>
+      <div class="chips"><span class="chip">ハッシュテーブル<span class="gl">鍵から値を即座に引く</span></span>
+            <span class="chip">ハッシュ関数と衝突</span>
+            <span class="chip">集合</span>
+            <span class="chip">多重集合</span>
+            <span class="chip">トライ木<span class="gl">文字列の前方一致に強い木</span></span></div>
+      <div class="prose"><p>ハッシュテーブルは鍵から値を平均O(1)で引き出せる構造で、ハッシュ関数が鍵を配列の添字に変換し、衝突が起きた場合はチェイン法やオープンアドレス法で対処する。集合は重複を許さない要素の集まり、多重集合は重複を許す集合であり、トライ木は文字列の前方一致検索に強い木構造として辞書や補完機能の裏側で使われる。</p>
+            <p>「一意なキーで高速に検索したい」という要求は業務システムのほぼ全てに現れるため、ハッシュテーブルの性質を理解していないと不要な線形探索を書いてしまう。AIが提案したコードがハッシュテーブルで十分な場面で配列の全件走査を行っていないかを見抜く力は、パフォーマンスレビューの基本動作である。</p>
+            <p>落とし穴としてはハッシュ関数の偏りによる衝突多発やミュータブルなオブジェクトをキーに使ってしまう不具合があり、言語ごとの実装差（例えば挿入順序を保持するかどうか）を知らないと再現しにくいバグを生む。トライ木のようなやや専門的な構造は、オートコンプリートや辞書式の前方一致検索が要件に出た時点で候補に挙げられるかが実務力の分かれ目になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>素の配列での線形探索とハッシュテーブル(dict/Map)で「1万件から特定キーを検索する」処理をそれぞれ書き、実行時間を比較計測する。所要目安: 45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>木構造</h3>
+      <div class="chips"><span class="chip">二分木</span>
+            <span class="chip">二分探索木</span>
+            <span class="chip">平衡木<span class="gl">偏りを自動で直す木</span></span>
+            <span class="chip">ヒープ<span class="gl">最大/最小を素早く取り出す木</span></span>
+            <span class="chip">B木<span class="gl">データベースの索引に使う木</span></span></div>
+      <div class="prose"><p>二分木は各ノードが最大2つの子を持つ構造で、二分探索木はさらに左が小さく右が大きいという順序性を持たせたものである。平衡木はこの順序性を保ちながら木の偏りを自動的に補正し、ヒープは常に最大値または最小値を根に置くことで優先度付きの取り出しを高速化し、B木は一度に多くの子を持たせることでディスクI/Oを減らし、データベースの索引として広く使われる。</p>
+            <p>これらはデータベースのインデックス、優先度付きキュー、ソート済み集合の実装原理そのものであり、なぜインデックスが速いのかを説明できるかどうかは、SQLのパフォーマンスチューニングを一人でこなせるかの分岐点になる。AI時代においても、AIが提案したインデックス設計やアルゴリズムの妥当性を判断するにはこの構造の理解が欠かせない。</p>
+            <p>実務でありがちなのは、二分探索木を使うべき場面で平衡化を怠り最悪計算量が線形になってしまうケースや、ヒープが必要な優先度付き処理を単純なソート済み配列で毎回作り直してしまうケースである。B木がなぜ浅い木で済むのかを理解していると、データベースのページサイズやカーディナリティの議論にもついていける。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>二分探索木を自分の言語で実装し、ソート済みデータを挿入すると木が偏って最悪計算量になることを確認したうえで、平衡木ライブラリと性能を比較する。所要目安: 1.5時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>グラフ</h3>
+      <div class="chips"><span class="chip">有向グラフ・無向グラフ</span>
+            <span class="chip">隣接リスト・隣接行列</span>
+            <span class="chip">重み付きグラフ</span>
+            <span class="chip">DAG<span class="gl">閉路のない有向グラフ</span></span>
+            <span class="chip">トポロジカルソート<span class="gl">依存順に並べる</span></span></div>
+      <div class="prose"><p>グラフは要素（頂点）と要素間のつながり（辺）で表現される構造で、向きの有無により有向グラフと無向グラフに分かれ、内部表現としては隣接リストか隣接行列を使う。辺に重みを持たせれば距離やコストを表現でき、閉路のない有向グラフはDAGと呼ばれ、依存順に要素を並べるトポロジカルソートの対象になる。</p>
+            <p>ソーシャルネットワーク、依存関係の解決、ルーティング、ワークフローエンジンなど、実務のあらゆる場面にグラフは姿を変えて現れるため、問題を見た瞬間に「これはグラフ問題だ」と気づける抽象化能力が一人前のエンジニアの条件になる。ビルドツールのタスク依存解決やマイクロサービス間の呼び出し関係の把握にもこの知識が直結する。</p>
+            <p>落とし穴は隣接行列を疎なグラフに使ってメモリを浪費することや、循環依存を検知せずにトポロジカルソートを実行して無限ループに陥ることである。AIが生成した依存解決ロジックが循環依存のチェックを省略していないか、DAGを前提とした処理に循環が紛れ込んでいないかを見抜くには、グラフ理論の基礎が不可欠である。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分のプロジェクトやビルドツールの依存関係を隣接リストとして書き出し、トポロジカルソートを実装して正しい依存順序が出力されるか確認する。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://zenn.dev/brainyblog/articles/data-structures-beginners-guide">データ構造入門：基本概念と主要なデータ構造を理解しよう</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">配列・木・グラフなど主要なデータ構造の全体像をつかめる</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/akachiryo/items/b431a74f1cde18d45ad3">Railsで学ぶ データ構造入門 〜配列・ハッシュ・木・グラフは実は毎日使っている〜</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">身近なWebフレームワークの内部でデータ構造がどう使われているかがわかる</p>
+        </li>
+        <li>
+          <a href="https://taiziii.com/column/406/">絶対に知っておきたい！超重要なデータ構造 7選</a>
+          <span class="domain">taiziii.com</span>
+          <p class="desc">実務で頻出するデータ構造を要点だけ素早く復習できる</p>
+        </li>
+        <li>
+          <a href="https://sevendays-study.com/algorithm/day1.html">一週間で身につくアルゴリズムとデータ構造｜第1日目：線形データ構造①</a>
+          <span class="domain">sevendays-study.com</span>
+          <p class="desc">配列・連結リストなど線形データ構造を段階的に学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../study-00.html">← レイヤー概要</a>
+      <a href="g2.html">2. アルゴリズム →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

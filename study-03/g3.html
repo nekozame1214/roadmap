@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>検索拡張 — LLM・AIそのものの理解 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-03.html">← Layer 03 概要</a>
+    <a href="../ai-skillset.html#L03">チェックリストで見る</a>
+    <span class="strip"><a href="../study-00.html">00 基礎</a>
+<a href="../study-01.html">01 実務開発力</a>
+<a href="../study-02.html">02 プロジェクト遂行</a>
+<a href="../study-03.html" class="current">03 LLM理解</a>
+<a href="../study-04.html">04 プロンプト</a>
+<a href="../study-05.html">05 実務</a>
+<a href="../study-06.html">06 エージェント</a>
+<a href="../study-07.html">07 評価</a>
+<a href="../study-08.html">08 セキュリティ</a>
+<a href="../study-09.html">09 コスト</a>
+<a href="../study-10.html">10 組織</a>
+<a href="../study-11.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 03 / LLM・AIそのものの理解 — 3 of 4</p>
+    <h1>検索拡張</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>Embedding<span class="gl">文章を数値ベクトルに変換</span></h3>
+      <div class="chips"><span class="chip">ベクトル化の意味</span>
+            <span class="chip">コサイン類似度{向きの近さで測る}</span>
+            <span class="chip">次元数とモデル選択</span>
+            <span class="chip">日本語対応モデルの選定</span>
+            <span class="chip">正規化</span>
+            <span class="chip">埋め込みの再生成タイミング</span></div>
+      <div class="prose"><p>Embeddingとは、文章や単語の意味を数値の並び（ベクトル）に変換する技術のことだ。このベクトル化の意味を理解すると、「意味が近い文章ほど、ベクトル空間上でも近い位置に来る」という直感が得られる。</p>
+            <p>この仕組みは、後述するRAGをはじめとする検索拡張全般の土台になっており、AI活用のプロダクトでは避けて通れない知識になる。ベクトル同士の近さを測るコサイン類似度の意味を理解していないと、なぜ検索結果がその順番で返ってくるのかを説明できない。</p>
+            <p>実務では、次元数とモデル選択（ベクトルの長さと表現力のトレードオフ）や日本語対応モデルの選定が精度に大きく影響する。英語向けに最適化されたモデルをそのまま日本語データに使うと、類似度の精度が落ちることがある。また、ベクトルの正規化を行うかどうかで類似度計算の結果が変わる点、そして元のデータが更新された際の埋め込みの再生成タイミングを運用として設計しておかないと、検索結果が古い情報のまま固定されてしまう、という落とし穴にも注意したい。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>意味が近い文と遠い文のペアを3組ほど用意し、embeddingモデル（日本語対応モデル）でベクトル化してコサイン類似度を計算する小さなスクリプトを書く。意味の近さが数値としてどう表れるかを確認する。所要時間の目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>RAG<span class="gl">外部知識を検索して回答に使う仕組み</span></h3>
+      <div class="chips"><span class="chip">チャンク分割{文書を小片に割る}戦略</span>
+            <span class="chip">チャンクサイズとオーバーラップ{重なり}</span>
+            <span class="chip">意味単位での分割</span>
+            <span class="chip">メタデータ{属性情報}付与</span>
+            <span class="chip">ハイブリッド検索{意味検索＋キーワード検索}</span>
+            <span class="chip">BM25{キーワード検索の代表手法}</span>
+            <span class="chip">リランキング{再並び替え}</span>
+            <span class="chip">クエリ書き換え{検索用に質問を作り直す}</span>
+            <span class="chip">引用元の提示</span>
+            <span class="chip">検索精度の評価{再現率・適合率}</span></div>
+      <div class="prose"><p>RAGは、モデルが学習していない外部の知識を検索で取り出し、その内容をプロンプトに含めて回答させる仕組みだ。ハルシネーションを抑えつつ、社内文書や最新情報にモデルを対応させる代表的な手法として広く使われている。</p>
+            <p>RAGの精度は前段の検索の質にほぼ支配されるため、この構造を理解していないと「モデルを変えれば精度が上がる」といった誤った対策に時間を費やしてしまう。AIを組織のナレッジに接続する仕事の多くは、実質的にはこの検索パイプラインの設計そのものである。</p>
+            <p>文書を検索しやすい単位に割るチャンク分割戦略が最初の分岐点になる。チャンクサイズとオーバーラップの設定、あるいは意味単位での分割によって、検索でヒットする粒度が大きく変わる。各チャンクにメタデータを付与しておくと、絞り込み検索やフィルタリングがしやすくなる。</p>
+            <p>検索段階では、意味検索とキーワード検索を組み合わせるハイブリッド検索が有効なことが多く、キーワード検索の代表手法であるBM25と埋め込みによる意味検索を併用する構成がよく使われる。取得結果を並び替えるリランキング、質問文を検索向けに作り直すクエリ書き換えも精度向上に効く。最後に、回答には引用元の提示を行い、ユーザーが根拠を検証できるようにする。そして、この一連のパイプラインは作って終わりではなく、再現率・適合率といった指標で検索精度の評価を継続的に行って初めて、改善サイクルが回る。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>手元にある5〜10ページ程度のテキスト文書を用意し、（1）チャンク分割、（2）embedding化、（3）質問文とのコサイン類似度検索、（4）上位チャンクをプロンプトに含めて回答生成、という最小構成のRAGパイプラインを書いてみる。チャンクサイズを変えて検索結果がどう変わるかも試す。所要時間の目安: 2〜3時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>拡張手法の選択</h3>
+      <div class="chips"><span class="chip">プロンプトで済むか</span>
+            <span class="chip">RAGが要るか</span>
+            <span class="chip">ファインチューニング{追加学習で挙動を寄せる}が要るか</span>
+            <span class="chip">蒸留{大モデルの挙動を小モデルへ}</span>
+            <span class="chip">コストと更新頻度での判断</span>
+            <span class="chip">組み合わせ運用</span></div>
+      <div class="prose"><p>LLMの挙動や知識を目的に合わせて拡張する方法は一つではない。プロンプトの工夫、RAG、追加学習でモデル自体の挙動を寄せるファインチューニングなど、複数の選択肢があり、それぞれ得意な領域とコストが異なる。</p>
+            <p>この選択を誤ると、シンプルなプロンプト調整で十分な問題にわざわざファインチューニングの手間とコストをかけたり、逆に頻繁に更新される知識をモデルの重みに焼き込もうとして運用が破綻したりする。技術選定の勘所を持つことが、AI導入の費用対効果を左右する。</p>
+            <p>判断の順序としては、まずプロンプトで済むかを検討し、外部知識が必要ならRAGが要るかを検討し、それでも挙動そのものを変えたいならファインチューニングが要るかを検討する、という段階を踏むのが定石だ。大きなモデルの挙動を小さなモデルに移す蒸留という手法も選択肢に入る。最終的にはコストと更新頻度での判断が決め手になることが多く、実際のプロダクトでは単一の手法に頼らず複数を重ねる組み合わせ運用になるケースも珍しくない。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分の業務や身近なタスクから「AIに任せたいこと」を1つ選び、プロンプト調整・RAG・ファインチューニングのどれで実現するのが適切かを、更新頻度・必要な精度・コストの3軸で比較検討するメモを書く。所要時間の目安: 30分〜1時間。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://harmonic-society.co.jp/embedding-model-guide/">Embeddingモデル入門｜テキスト・画像のベクトル化と類似検索の実践</a>
+          <span class="domain">harmonic-society.co.jp</span>
+          <p class="desc">Embeddingの基本原理から類似検索の実践までを一通り学べる入門記事。</p>
+        </li>
+        <li>
+          <a href="https://www.sbintuitions.co.jp/blog/entry/2025/08/20/160139">Sarashina-Embedding-v2-1B: 日本語に特化した指示を付与できるテキスト埋め込みモデル</a>
+          <span class="domain">sbintuitions.co.jp</span>
+          <p class="desc">日本語対応embeddingモデルの選定において参考になる、日本語特化モデルの実例。</p>
+        </li>
+        <li>
+          <a href="https://renue.co.jp/posts/hybrid-search-bm25-vector-rrf-rag-guide-2026">ハイブリッド検索とは？BM25×ベクトル検索×RRFのRAG実装ガイド【2026年版】</a>
+          <span class="domain">renue.co.jp</span>
+          <p class="desc">BM25とベクトル検索を組み合わせるハイブリッド検索の実装方法を具体的に学べる。</p>
+        </li>
+        <li>
+          <a href="https://zenn.dev/acntechjp/articles/75040fe187f425">プロンプト、RAG、ファインチューニングの違いを学ぶ No.1</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">3つの拡張手法の違いと使い分けの考え方を整理して学べる。</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="g2.html">← 前のグループ: デプロイと運用形態</a>
+      <a href="g4.html">次のグループ: 外部接続 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

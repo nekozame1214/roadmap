@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>検証 — AIコーディング実務 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-05.html">← Layer 05 概要</a>
+    <a href="../ai-skillset.html#L05">チェックリストで見る</a>
+    <span class="strip">
+      <a href="../study-00.html">00 基礎</a>
+      <a href="../study-01.html">01 実務開発力</a>
+      <a href="../study-02.html">02 プロジェクト遂行</a>
+      <a href="../study-03.html">03 LLM理解</a>
+      <a href="../study-04.html">04 プロンプト</a>
+      <a href="../study-05.html" class="current">05 実務</a>
+      <a href="../study-06.html">06 エージェント</a>
+      <a href="../study-07.html">07 評価</a>
+      <a href="../study-08.html">08 セキュリティ</a>
+      <a href="../study-09.html">09 コスト</a>
+      <a href="../study-10.html">10 組織</a>
+      <a href="../study-11.html">11 マインド</a>
+    </span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 05 / AIコーディング実務 — 2 of 4</p>
+    <h1>検証</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>レビュー観点</h3>
+      <div class="chips"><span class="chip">要件との一致</span>
+            <span class="chip">存在しないAPI<span class="gl">実在しない関数</span>の使用</span>
+            <span class="chip">エラーハンドリングの欠落</span>
+            <span class="chip">過剰な抽象化・不要な汎用化</span>
+            <span class="chip">既存パターンとの不整合</span>
+            <span class="chip">不要な依存追加</span>
+            <span class="chip">テストの実質性<span class="gl">常に通るだけの試験</span></span>
+            <span class="chip">コメントと実装の食い違い</span>
+            <span class="chip">セキュリティ観点の見落とし</span></div>
+      <div class="prose"><p>レビュー観点とは、AIが生成したコードを読むときに、どこに注意を向けるべきかのチェックリストである。まず確認すべきは要件との一致で、コードが動くかどうかではなく、そもそも依頼した仕様を満たしているかを見る。</p>
+            <p>AI生成コードは人間が書いたコードとは異なる種類の欠陥を持ちやすいため、従来のレビュー観点だけでは不十分になる。特有の落とし穴を知らずにレビューすると、一見きれいで動くコードの中に潜む問題を見逃してしまう。この観点を身につけることは、AIを安心して任せられる範囲を広げることに直結する。</p>
+            <p>AI特有の落とし穴としてまず挙がるのが存在しないAPI<span class="gl">実在しない関数</span>の使用で、もっともらしい名前の関数やライブラリを呼び出しているのに実際には存在しないケースがある。エラーハンドリングの欠落や、過剰な抽象化・不要な汎用化も頻発する。過去に見た類似パターンから一般化しすぎて、シンプルで済む処理を複雑にしてしまうのだ。既存パターンとの不整合、不要な依存追加もチェック対象になる。特に見落とされがちなのがテストの実質性<span class="gl">常に通るだけの試験</span>で、アサーションが実質何も検証していないテストが紛れ込むことがある。コメントと実装の食い違い、そしてセキュリティ観点の見落としも、生成物特有の癖として意識的に確認する必要がある。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>直近でAIに書かせたコード(または新たに小さな機能をAIに実装させたもの)を、この9項目のチェックリストを縦に並べた表にして1件ずつ○×で採点する。×がついた項目については、なぜAIがその欠陥を生んだのか原因を1行でメモする。所要目安45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>デバッグ</h3>
+      <div class="chips"><span class="chip">再現手順の確定</span>
+            <span class="chip">二分探索で原因箇所を絞る</span>
+            <span class="chip">ログ追加による確認</span>
+            <span class="chip">AIに説明させて矛盾を突く</span>
+            <span class="chip">仮説と検証の分離</span>
+            <span class="chip">最小再現コードの作成</span></div>
+      <div class="prose"><p>デバッグとは、コードが期待通りに動かない原因を特定し、修正に至る過程を指す。AIを使う場合でも出発点は変わらず、まず再現手順の確定から始める。再現しない不具合はAIにとっても人間にとっても調査のしようがない。</p>
+            <p>AIはデバッグにおいて強力な補助になる一方、誤った仮説を自信満々に提示することもあるため、使い方を誤ると遠回りになる。原因調査を丸投げするのではなく、人間が調査の骨格を持ちながらAIを使うほうが、結果として早く正確に原因へたどり着ける。</p>
+            <p>実務では二分探索で原因箇所を絞る手法が基本で、AIにも「この範囲を疑って調べて」と対象を絞って依頼すると精度が上がる。ログ追加による確認をAIに手伝わせるのも有効だ。仮説と検証の分離を徹底し、AIが出した仮説をそのまま信じるのではなく、必ず検証のステップを挟む。有効なテクニックとしてAIに説明させて矛盾を突く方法があり、AIに「なぜこのコードはこう動くはずか」を説明させると、説明自体の矛盾から誤った前提が見つかることがある。最小再現コードの作成をAIに依頼すれば、問題を切り分けた小さなコードで議論でき、原因特定が早まる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>現在抱えている、あるいは過去に解決したバグを1つ選び、再現手順を明文化した上でAIに「なぜこの入力でこの結果になるはずか」を説明させる。説明の中に矛盾がないか自分で検証し、疑わしい箇所にログを1つ追加して仮説を裏付けてから、最小再現コードを書かせて原因を確定させる。所要目安60分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://zenn.dev/heygeek/articles/ai-code-review-30min-checklist">AI生成コードを30分でレビューする手順 — 見る順番とツールの使い方</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">AI生成コードを効率よくレビューするための優先順位と手順が学べる</p>
+        </li>
+        <li>
+          <a href="https://techaide.jp/blog/ai-generated-code-review-four-perspectives/">AI生成コードのレビューが甘くなる前に｜現場で効く4観点</a>
+          <span class="domain">techaide.jp</span>
+          <p class="desc">要件適合・暗黙仕様・テスト設計・依存範囲の4観点でのレビュー手法が学べる</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/soranjiro/items/2b66a453fd95210569af">AI agentにコードのデバッグをさせる方法 #ClaudeCode</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">AIエージェントにデバッグを任せる実践的な進め方が学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="g1.html">← 任せ方</a>
+      <a href="g3.html">リポジトリのAI可読性 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

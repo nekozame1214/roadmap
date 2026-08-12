@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>教育・人材育成 — 組織能力 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-10.html">← Layer 10 概要</a>
+    <a href="../ai-skillset.html#L10">チェックリストで見る</a>
+    <span class="strip"><a href="../study-00.html">00 基礎</a>
+    <a href="../study-01.html">01 実務開発力</a>
+    <a href="../study-02.html">02 プロジェクト遂行</a>
+    <a href="../study-03.html">03 LLM理解</a>
+    <a href="../study-04.html">04 プロンプト</a>
+    <a href="../study-05.html">05 実務</a>
+    <a href="../study-06.html">06 エージェント</a>
+    <a href="../study-07.html">07 評価</a>
+    <a href="../study-08.html">08 セキュリティ</a>
+    <a href="../study-09.html">09 コスト</a>
+    <a href="../study-10.html" class="current">10 組織</a>
+    <a href="../study-11.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 10 / 組織能力 — 2 of 6</p>
+    <h1>教育・人材育成</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>成熟度モデル</h3>
+      <div class="chips"><span class="chip">Lv1〜Lv4の定義</span>
+            <span class="chip">各レベルの観測可能な行動</span>
+            <span class="chip">自己評価と他者評価</span>
+            <span class="chip">昇格の目安</span>
+            <span class="chip">チーム単位での可視化</span>
+            <span class="chip">各レベルの卒業条件</span>
+            <span class="chip">レベル間の移行支援</span>
+            <span class="chip">停滞時のテコ入れ策</span></div>
+      <div class="prose"><p>成熟度モデルとは、個人やチームのAI活用度合いを段階的に定義し、今どのレベルにいるかを測る物差しである。「AIを使いこなせているか」という曖昧な問いを、<strong>Lv1〜Lv4の定義</strong>のような具体的な段階に分解し、<strong>各レベルの観測可能な行動</strong>で判定できるようにする。</p>
+            <p>個人の感覚では「自分はできている」と思っていても、組織全体で見たときの実力にばらつきがあることは珍しくない。成熟度モデルは<strong>自己評価と他者評価</strong>を突き合わせ、<strong>チーム単位での可視化</strong>を行うことで、組織としての現在地を客観視する仕組みを提供する。これは個人のスキルチェックリストとは異なり、組織のポートフォリオとしての強み弱みを把握するための道具である。</p>
+            <p>運用でつまずきやすいのは、レベル定義を作った後の扱いだ。<strong>昇格の目安</strong>や<strong>各レベルの卒業条件</strong>が曖昧だと、評価が主観に流れて形骸化する。またレベルが上がらないまま停滞するチームも出てくるため、<strong>レベル間の移行支援</strong>や<strong>停滞時のテコ入れ策</strong>をセットで用意しておかないと、モデル自体が「測るだけで何もしない」ものになりがちだ。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分自身のAI活用レベルをLv1〜Lv4のような簡単な基準で自己評価し、次のレベルに上がるために必要な行動を3つ書き出す。所要目安: 25分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>カリキュラム</h3>
+      <div class="chips"><span class="chip">入門・中級・上級の階層</span>
+            <span class="chip">動画・ハンズオン・課題の組み合わせ</span>
+            <span class="chip">想定学習時間の提示</span>
+            <span class="chip">オンボーディング（新規参加時の導入）への組み込み</span>
+            <span class="chip">到達確認テスト</span></div>
+      <div class="prose"><p>カリキュラムは、AI活用スキルを体系立てて学べるように設計された学習コースである。<strong>入門・中級・上級の階層</strong>を用意し、学習者が自分のレベルに合った教材から始められるようにする。</p>
+            <p>優れたメンターが一対一で教えられる人数には限りがある。組織全体のスキルを底上げするには、属人的な指導だけに頼らず、誰でも自習で一定水準に到達できる教材を体系化する必要がある。これがカリキュラムという組織資産の役割であり、個人の指導力とは別のスケーラビリティをもたらす。</p>
+            <p>実務では<strong>動画・ハンズオン・課題の組み合わせ</strong>で座学と実践のバランスを取り、<strong>想定学習時間の提示</strong>で受講者が計画を立てやすくする。新入社員が最初に触れる情報として<strong>オンボーディング（新規参加時の導入）への組み込み</strong>を行うと定着率が上がる。ただし作って終わりにせず、<strong>到達確認テスト</strong>で実際に身についたかを確認しないと、「受講したが使えない」状態を見逃してしまう。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自組織や公開されている学習カリキュラムを1つ選び、入門・中級・上級のどこに自分が該当するか診断してみる。所要目安: 20分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>ワークショップ</h3>
+      <div class="chips"><span class="chip">題材選定（実業務に近いもの）</span>
+            <span class="chip">事前準備と環境構築</span>
+            <span class="chip">ファシリテーション（進行）</span>
+            <span class="chip">つまずきポイントの想定</span>
+            <span class="chip">振り返りとアンケート</span></div>
+      <div class="prose"><p>ワークショップは、参加者が実際に手を動かしながらAI活用を体験する短期集中の学習イベントである。座学やドキュメントだけでは腹落ちしない感覚的な部分——プロンプトの手応えや失敗の実感——を、体験を通じて短時間で伝えられる。</p>
+            <p>一人の講師が優れたデモを見せられても、それを見た側が自分ごととして身につけるとは限らない。<strong>題材選定<span class="gl">実業務に近いもの</span></strong>を工夫し、参加者自身の業務に近い課題を扱うことで、他人事から自分事へ変換する仕掛けを組み込む必要がある。これは講師個人の話術ではなく、設計としての組織能力だ。</p>
+            <p>運営面では<strong>事前準備と環境構築</strong>を軽視すると、当日に接続トラブルなどで時間の大半が失われる。<strong>ファシリテーション<span class="gl">進行</span></strong>次第で場の空気が大きく変わるため、進行役の育成も課題になる。よくある<strong>つまずきポイントの想定</strong>を事前に洗い出しておき、終了後は<strong>振り返りとアンケート</strong>で次回の改善につなげるサイクルを回すことが重要だ。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分の実業務から題材を1つ選び、30分程度のミニワークショップの進行台本（アジェンダ・つまずきポイント想定）を作ってみる。所要目安: 45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>ポータル・ナレッジ</h3>
+      <div class="chips"><span class="chip">情報構造の設計</span>
+            <span class="chip">検索性の確保</span>
+            <span class="chip">更新責任者の明確化</span>
+            <span class="chip">陳腐化対策と棚卸し</span>
+            <span class="chip">入口の一本化</span></div>
+      <div class="prose"><p>ポータル・ナレッジとは、AI活用に関するあらゆる情報——ガイドライン、テンプレート、事例、FAQなど——を集約する一元的な情報基盤のことだ。バラバラなチャットやドキュメントに散在した知識を、探せば見つかる状態に整理する。</p>
+            <p>各チームが独自にナレッジを溜め込んでいても、組織全体では「どこに何があるか誰も知らない」という状態に陥りやすい。<strong>情報構造の設計</strong>と<strong>検索性の確保</strong>によって、個々の知識を組織全体でアクセス可能な資産に変換することがこの項目の本質である。</p>
+            <p>ポータルは作った瞬間から陳腐化が始まる。<strong>更新責任者の明確化</strong>を怠ると誰も手入れをしなくなり、情報が古いまま放置される。定期的な<strong>陳腐化対策と棚卸し</strong>で情報の鮮度を保ち、複数の情報源が乱立しないよう<strong>入口の一本化</strong>を徹底することで、「結局どこを見ればいいか分からない」という状態を避けられる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自組織のAI関連情報がどこに散在しているか洗い出し、情報の入口を1つに絞るとしたらどう構成するか案を書いてみる。所要目安: 30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>事例共有</h3>
+      <div class="chips"><span class="chip">成功事例のフォーマット統一</span>
+            <span class="chip">失敗事例を出せる場づくり</span>
+            <span class="chip">定例共有会</span>
+            <span class="chip">社内発表の推奨</span>
+            <span class="chip">他社事例の収集</span></div>
+      <div class="prose"><p>事例共有は、現場で得られたAI活用の成功や失敗の知見を、他のチームにも展開する仕組みである。一つのチームが偶然良い使い方を見つけても、それが共有されなければ組織全体の成果にはつながらない。</p>
+            <p>個人の成功体験は、そのままでは属人的な自慢話に終わりがちだ。<strong>成功事例のフォーマット統一</strong>を行い、誰が読んでも再現できる形に整理することで、初めて組織のナレッジとして機能する。同時に<strong>失敗事例を出せる場づくり</strong>がなければ、失敗は隠され、同じ回り道を他のチームが繰り返すことになる。</p>
+            <p>継続的な仕組みとしては<strong>定例共有会</strong>を設け、発表への心理的ハードルを下げるために<strong>社内発表の推奨</strong>を制度として後押しするとよい。社内事例だけでは視野が狭くなるため、<strong>他社事例の収集</strong>も並行して行い、外部の動向と比較しながら自社の立ち位置を確認する姿勢が求められる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分がAIを使って助かった事例を1つ、成功・失敗を問わず定型フォーマット（背景・やったこと・結果・学び）で書いてみる。所要目安: 25分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://schoo.jp/biz/column/1882">生成AIを活用した人材育成とは？メリットや注意点、活用事例まで紹介</a>
+          <span class="domain">schoo.jp</span>
+          <p class="desc">AI活用の人材育成を設計する際の全体像とポイントがわかる</p>
+        </li>
+        <li>
+          <a href="https://service-innovation.co.jp/s-ai-training/topics/2310/">生成AI研修を社内導入する方法｜社内教育の進め方・事例・費用・リスク対策まで徹底解説</a>
+          <span class="domain">service-innovation.co.jp</span>
+          <p class="desc">カリキュラムやワークショップを社内で立ち上げる進め方の具体例がわかる</p>
+        </li>
+        <li>
+          <a href="https://ai-keiei.shift-ai.co.jp/ai-in-house-training-example/">AI社内研修の成功事例7選!メリットや導入時の注意点も紹介</a>
+          <span class="domain">ai-keiei.shift-ai.co.jp</span>
+          <p class="desc">社内研修の成功事例を通じて、事例共有のフォーマット化のヒントが得られる</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/tomotagwork/items/c10ed593ca3eaf52ab15">生成AI Study - (1) 基礎知識の整理</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">段階を踏んだ自己学習カリキュラムの組み立て方の一例として参考になる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="g1.html">← 1. 標準化</a>
+      <a href="g3.html">3. 推進・変革管理 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

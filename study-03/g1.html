@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>生成の仕組み — LLM・AIそのものの理解 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-03.html">← Layer 03 概要</a>
+    <a href="../ai-skillset.html#L03">チェックリストで見る</a>
+    <span class="strip"><a href="../study-00.html">00 基礎</a>
+<a href="../study-01.html">01 実務開発力</a>
+<a href="../study-02.html">02 プロジェクト遂行</a>
+<a href="../study-03.html" class="current">03 LLM理解</a>
+<a href="../study-04.html">04 プロンプト</a>
+<a href="../study-05.html">05 実務</a>
+<a href="../study-06.html">06 エージェント</a>
+<a href="../study-07.html">07 評価</a>
+<a href="../study-08.html">08 セキュリティ</a>
+<a href="../study-09.html">09 コスト</a>
+<a href="../study-10.html">10 組織</a>
+<a href="../study-11.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 03 / LLM・AIそのものの理解 — 1 of 4</p>
+    <h1>生成の仕組み</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>トークン<span class="gl">モデルが扱う文字のかたまり</span>とコンテキスト</h3>
+      <div class="chips"><span class="chip">トークン化の仕組み</span>
+            <span class="chip">日本語のトークン効率{英語より消費が多い}</span>
+            <span class="chip">コンテキストウィンドウ{一度に渡せる上限}</span>
+            <span class="chip">入力トークンと出力トークンの区別</span>
+            <span class="chip">トークン数の見積もり</span>
+            <span class="chip">上限超過時の挙動</span></div>
+      <div class="prose"><p>LLMは人間が読む「文字」をそのまま処理しているわけではない。入力された文章はまずトークン化の仕組みによって、単語や部分文字列といった細かい単位（トークン）に分解され、モデルはその数値列を対象に計算を行う。人間の目には自然な一文でも、モデルの内部では十数個から数十個のトークンの並びとして扱われている。</p>
+            <p>この仕組みを理解しておかないと、コストやレイテンシの見積もりを誤る。多くのAPIは処理したトークン数に応じて課金されるため、トークンの数え方を知らないまま設計すると想定外の請求や速度劣化に驚くことになる。特に日本語のトークン効率は英語より消費が多いという特性があり、同じ内容の文章でも日本語は英語よりずっと多くのトークンを消費しやすい。日本語中心のプロダクトを作るなら、この非対称性を前提に見積もる必要がある。</p>
+            <p>実務では、モデルに一度に渡せる上限であるコンテキストウィンドウを常に意識する。入力トークンと出力トークンの区別も重要で、課金単価や上限の扱いが異なることが多い。事前にトークン数の見積もりを行い、上限に近づく設計を避けるのが基本だが、それでも超過することはある。上限超過時の挙動（エラーで止まるのか、古い文脈が自動で切り捨てられるのか）はモデルやAPIごとに異なるため、事前に検証しておかないと本番運用で会話履歴が突然消える、といった事故につながる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>同じ内容の一文を日本語と英語で用意し、Anthropicのトークンカウント機能やOpenAIの公開トークナイザーツールに通して、それぞれ何トークンになるか数えて比較する。日本語が何倍消費するかを実測値で確認する。所要時間の目安: 30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>出力の性質</h3>
+      <div class="chips"><span class="chip">次トークン予測{次の語を確率で選ぶ}</span>
+            <span class="chip">temperature{出力のばらつき度合い}</span>
+            <span class="chip">top_p{候補の絞り込み幅}</span>
+            <span class="chip">停止条件{生成を止める指定}</span>
+            <span class="chip">非決定性{同じ入力でも出力が揺れる}の前提</span>
+            <span class="chip">seed{乱数の固定}の限界</span>
+            <span class="chip">トークン上限による途中終了</span></div>
+      <div class="prose"><p>LLMの出力生成は、次トークン予測、つまり「今までの文脈を踏まえて次に来る可能性が高いトークンを確率的に選び、それを一つずつ積み重ねる」処理の連続にすぎない。文章全体を一括で「思いついて」いるのではなく、確率分布からのサンプリングを逐次繰り返している、という理解がまず土台になる。</p>
+            <p>この確率的なプロセスであるという事実を知らないと、出力の挙動を制御するパラメータの意味も、挙動のばらつきそのものも正しく扱えない。temperatureは出力のばらつき度合いを、top_pは候補の絞り込み幅を調整するパラメータであり、両者を理解して初めて「毎回同じような無難な答え」と「多様だが時々突飛な答え」の間を狙って調整できる。</p>
+            <p>実務上まず押さえるべきは非決定性の前提である。同じ入力を与えても出力が揺れるのはバグではなく仕組み上の性質であり、これを知らないとテストやデバッグで混乱する。seedを指定すれば再現性が上がると期待されがちだが、seedの限界として完全な再現は保証されない場合が多い。また、生成を止める停止条件を適切に設定していないと出力が無駄に長引き、逆にトークン上限による途中終了で文章が尻切れになることもある。どちらも本番で気づきにくい落とし穴である。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>同じプロンプトをtemperature 0、0.5、1.0の3パターンでそれぞれ3回ずつAPI経由で実行し、出力の一貫性とばらつきを見比べる。temperature=0でも完全に同一の出力にならない場合があることも確認する。所要時間の目安: 45分〜1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>ハルシネーション<span class="gl">もっともらしい嘘の生成</span></h3>
+      <div class="chips"><span class="chip">発生しやすい条件{固有名詞・数値・最新情報}</span>
+            <span class="chip">根拠と出典を出させる</span>
+            <span class="chip">外部情報での裏取り</span>
+            <span class="chip">わからないと言わせる指示</span>
+            <span class="chip">自己矛盾の検出</span>
+            <span class="chip">複数回生成して一致を見る</span></div>
+      <div class="prose"><p>ハルシネーションとは、LLMが事実に反する内容を、確信ありげな自然な文章として生成してしまう現象を指す。モデルはあくまで確率的にもっともらしい続きを生成しているだけで、内部に「真偽を検証する仕組み」を持っているわけではないため、堂々とした誤情報が生まれうる。</p>
+            <p>この性質を理解せずにLLMの出力をそのまま信じてしまうと、業務資料や顧客対応、意思決定に誤った情報が紛れ込むリスクを抱えたまま運用することになる。一人前のエンジニアとしても、AIを組織に導入する立場としても、ハルシネーションへの防御策を組み込む設計力は必須である。</p>
+            <p>実務では、まず発生しやすい条件を把握しておく。固有名詞・数値・最新情報は特にハルシネーションが起きやすい領域だ。対策としては、根拠と出典を出させる、外部情報での裏取りを行う、モデルに対して「わからないと言わせる指示」を明示的に与える、といった手法がある。さらに出力内の自己矛盾の検出を仕組みに組み込んだり、同じ問いを複数回生成して一致を見ることで確度を推定したりと、単一の対策に頼らず複数の防御線を重ねるのが定石である。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>あまり有名でない人物や製品について「詳しく教えて」と質問し、出力の中に検証できない具体的数値や固有名詞がないか確認する。次に「わからない場合は推測せずわからないと答えて、根拠となる情報源も示して」と指示を足して同じ質問をし、回答の変化を比較する。所要時間の目安: 45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>モデル選択</h3>
+      <div class="chips"><span class="chip">推論重視モデル{難問向け}</span>
+            <span class="chip">速度重視・軽量モデル{単純作業向け}</span>
+            <span class="chip">reasoning{思考過程を長く取る}モデルの使いどころ</span>
+            <span class="chip">マルチモーダル{文字以外も扱う}対応</span>
+            <span class="chip">コンテキスト長の違い</span>
+            <span class="chip">知識カットオフ{学習データの締め日}</span>
+            <span class="chip">過剰なモデルを使わない判断</span></div>
+      <div class="prose"><p>「LLM」とひとくくりにされがちだが、実際には性能・速度・コストの異なる複数のモデルが用途別に提供されている。難しい問題を丁寧に解かせたい場面向けの推論重視モデルもあれば、単純作業を高速かつ安価にこなす速度重視・軽量モデルもあり、どちらを選ぶかはタスクの性質次第で変わる。</p>
+            <p>この使い分けを理解していないと、単純な分類タスクに最上位モデルを使ってコストを浪費したり、逆に複雑な多段推論を軽量モデルにやらせて精度不足に陥ったりする。組織にAIを導入する立場では、タスクの難易度とモデル性能を対応づける設計判断が、費用対効果を大きく左右する。</p>
+            <p>選定の観点としては、reasoningモデルの使いどころ（じっくり思考過程を伸ばして精度を上げたい場面か)、マルチモーダル対応の要否（文字以外の入力を扱うか）、コンテキスト長の違い（長文書を丸ごと渡す必要があるか）、知識カットオフ（学習データの締め日以降の情報を知らない点）などがある。そして何より重要なのが、過剰なモデルを使わない判断だ。最強のモデルを何にでも使うのは一見安全に見えて、実際にはコストとレイテンシを不必要に悪化させる典型的なアンチパターンである。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>同じ単純作業（例: 短文の要約や分類）を軽量モデルと最上位モデルの両方に実行させ、応答時間・出力品質・概算コストを表にまとめて比較する。軽量モデルで十分な精度が出るかを確認する。所要時間の目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>モデルの評価とベンチマークの読み方</h3>
+      <div class="chips"><span class="chip">ベンチマークスコアの限界</span>
+            <span class="chip">リーダーボード{比較ランキング}の読み方の注意点</span>
+            <span class="chip">ベンチマーク汚染{評価データが学習に混入}の可能性</span>
+            <span class="chip">用途に合った独自評価との併用</span>
+            <span class="chip">相対比較と絶対性能の区別</span></div>
+      <div class="prose"><p>新しいモデルが出るたびに公開されるベンチマークスコアやリーダーボードは、モデル選定の重要な参考情報だが、それがそのまま自社タスクでの性能を保証するわけではない。ベンチマークは特定の問題形式・分野に対する平均的な成績を測っているに過ぎない。</p>
+            <p>この限界を知らずにスコアだけでモデルを選ぶと、実際の業務では期待外れの結果に終わることがある。AIを組織に導入する立場では、公開数値を鵜呑みにせず、自社のユースケースに即した判断力が求められる。</p>
+            <p>読み方の注意点としては、まずベンチマークスコアの限界を理解すること。リーダーボードの読み方の注意点として、同じベンチマークでも評価条件やプロンプトの違いでスコアが変動しうる点にも注意したい。さらに、評価データが学習データに混入してしまうベンチマーク汚染の可能性もあり、見かけの高スコアが実力を正しく反映していない場合もある。最終的には用途に合った独自評価との併用が欠かせず、公開スコアはあくまで相対比較の材料であって絶対性能を保証するものではない、という相対比較と絶対性能の区別を常に意識する必要がある。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>公開リーダーボードで気になるモデルを2〜3個選び、公開スコアを控える。その上で自分の業務に近いタスク（例: 社内文書の要約や分類）を5問程度用意し、同じモデルたちに実行させて自己採点し、公開スコアの順位と一致するか確認する。所要時間の目安: 1時間。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://zenn.dev/yusamore/articles/da16acdb582081">【LLM基礎】生成AIの「トークン」って何？ —— 文字数との違いと「日本語コスパ問題」</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">トークンの基本概念と、日本語が英語よりトークンを多く消費する理由を実例とともに学べる。</p>
+        </li>
+        <li>
+          <a href="https://a-x.inc/blog/llm-temperature/">【完全ガイド】LLMのtemperatureとは？出力の多様性を制御する仕組みを解説</a>
+          <span class="domain">a-x.inc</span>
+          <p class="desc">temperatureパラメータが次トークン予測の確率分布にどう作用するかを図解付きで理解できる。</p>
+        </li>
+        <li>
+          <a href="https://pm-ai-insights.com/hallucination/">LLMのハルシネーションへの7つの対策：RAG・プロンプト設計・評価指標……</a>
+          <span class="domain">pm-ai-insights.com</span>
+          <p class="desc">ハルシネーションを抑えるための具体的な対策手法を7つの観点から整理して学べる。</p>
+        </li>
+        <li>
+          <a href="https://zenn.dev/0h_n0/articles/205a1900fbde2a">LLMベンチマーク完全ガイド 主要15指標の読み方と自宅で実行する方法</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">主要なベンチマーク指標の意味と、リーダーボードを読む際の注意点を体系的に学べる。</p>
+        </li>
+        <li>
+          <a href="https://www.optimax.co.jp/ai-information/llm-leaderboard/">【2026年最新】LLMランキングの見方とおすすめTOP10｜ローカル/日本語LLMの最強モデルも比較</a>
+          <span class="domain">optimax.co.jp</span>
+          <p class="desc">リーダーボードの実際の見方と、用途別にどのモデルが適しているかの比較視点を学べる。</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../study-03.html">← レイヤー概要</a>
+      <a href="g2.html">次のグループ: デプロイと運用形態 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>標準化 — 組織能力 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-10.html">← Layer 10 概要</a>
+    <a href="../ai-skillset.html#L10">チェックリストで見る</a>
+    <span class="strip"><a href="../study-00.html">00 基礎</a>
+    <a href="../study-01.html">01 実務開発力</a>
+    <a href="../study-02.html">02 プロジェクト遂行</a>
+    <a href="../study-03.html">03 LLM理解</a>
+    <a href="../study-04.html">04 プロンプト</a>
+    <a href="../study-05.html">05 実務</a>
+    <a href="../study-06.html">06 エージェント</a>
+    <a href="../study-07.html">07 評価</a>
+    <a href="../study-08.html">08 セキュリティ</a>
+    <a href="../study-09.html">09 コスト</a>
+    <a href="../study-10.html" class="current">10 組織</a>
+    <a href="../study-11.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 10 / 組織能力 — 1 of 6</p>
+    <h1>標準化</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>利用ガイドライン</h3>
+      <div class="chips"><span class="chip">許可用途の列挙</span>
+            <span class="chip">禁止用途の列挙</span>
+            <span class="chip">判断に迷う場合の相談先</span>
+            <span class="chip">具体例の併記</span>
+            <span class="chip">1ページで読める要約版</span>
+            <span class="chip">更新履歴の管理</span></div>
+      <div class="prose"><p>利用ガイドラインとは、社内でAIをどこまで使ってよいかを文書として明文化したものだ。個人情報を入力してよいか、顧客コードを外部サービスに渡してよいか、といった判断を各自の感覚に委ねず、<strong>許可用途の列挙</strong>と<strong>禁止用途の列挙</strong>を対で示すことで、誰が読んでも同じ結論に至るようにする。</p>
+            <p>優秀なエンジニアが個々に「常識的な判断」をできても、組織としての一貫性は生まれない。ある部署は積極利用、別の部署は萎縮して使わない、という差が生じれば、それは個人スキルの欠如ではなくガイドライン不在の問題である。組織能力とは、判断基準を属人化させずに配布できる状態を指す。</p>
+            <p>実務では、規則を完璧に網羅しようとして分厚い文書を作ると誰も読まなくなる。<strong>1ページで読める要約版</strong>を用意し、詳細は別紙に譲る二層構成が有効だ。グレーゾーンの案件は必ず出るため、<strong>判断に迷う場合の相談先</strong>を明記し、抽象的な条文だけでなく<strong>具体例の併記</strong>で実際の使用場面をイメージできるようにする。ルールは一度作って終わりではなく、事例が増えるたびに見直しが必要になるため、<strong>更新履歴の管理</strong>を怠ると「今のルールがどれか分からない」という状態に陥りやすい。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自組織の現在のAI利用ルールを確認し、「許可用途」「禁止用途」「相談先」の3項目を1ページにまとめてみる。無ければ叩き台を書いてみる。所要目安: 45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>共通テンプレート</h3>
+      <div class="chips"><span class="chip">共通プロンプト集</span>
+            <span class="chip">指示ファイルの雛形</span>
+            <span class="chip">レビュー観点チェックリスト</span>
+            <span class="chip">タスク依頼フォーマット</span>
+            <span class="chip">事例テンプレート</span></div>
+      <div class="prose"><p>共通テンプレートは、各メンバーが毎回ゼロからプロンプトや指示ファイルを書く手間をなくすための標準部品集である。<strong>共通プロンプト集</strong>や<strong>指示ファイルの雛形</strong>を用意しておけば、新しいメンバーでも一定水準の指示文をすぐに書き始められる。</p>
+            <p>個人が優れたプロンプトを書けることと、組織全体の生産性が上がることは別の話だ。優秀な一人が良い型を作っても、それが本人のローカルフォルダに眠ったままでは組織の資産にならない。テンプレートを共有可能な形で整備し、誰もがアクセスできるようにして初めて、個人のノウハウが組織能力に転化する。</p>
+            <p>導入時によくある失敗は、テンプレートを作って終わりにしてしまい、使われているかを追跡しないことだ。<strong>レビュー観点チェックリスト</strong>や<strong>タスク依頼フォーマット</strong>は業務の型そのものに紐づくため、現場の実態と乖離するとすぐに形骸化する。成功した使い方を<strong>事例テンプレート</strong>として蓄積し、定期的に見直すサイクルを組み込むことが継続の鍵になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分が普段使っているプロンプトを3つ選び、他の人が使える形（変数化・説明付き）に整えてチームに共有してみる。所要目安: 30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>ツール選定</h3>
+      <div class="chips"><span class="chip">評価軸（機能・コスト・安全性・サポート）</span>
+            <span class="chip">PoC（概念実証）の実施</span>
+            <span class="chip">統一方針と例外許容</span>
+            <span class="chip">導入判断のプロセス</span>
+            <span class="chip">廃止・乗り換えの基準</span></div>
+      <div class="prose"><p>ツール選定とは、数あるAIコーディング支援ツールやサービスの中から、組織として何を採用するかを決めるプロセスだ。個人が好みのツールを自由に使う状態と、組織が方針を持って選定する状態はまったく異なる意思決定である。</p>
+            <p>各メンバーがそれぞれ気に入ったツールを勝手に契約すると、ライセンス費用が重複し、セキュリティ管理の対象も分散する。<strong>評価軸<span class="gl">機能・コスト・安全性・サポート</span></strong>を組織として定義し、比較検討できる状態を作ることは、個人の目利き力とは別次元の組織能力である。</p>
+            <p>実務では、いきなり全社導入を決めず、小規模な<strong>PoC<span class="gl">概念実証</span>の実施</strong>で実際の業務に合うかを検証してから<strong>導入判断のプロセス</strong>に進むのが定石だ。全チーム同じツールで統一するのが理想だが、業務特性によっては例外を許容する<strong>統一方針と例外許容</strong>のバランス感覚も求められる。導入したツールが陳腐化したときのために<strong>廃止・乗り換えの基準</strong>もあらかじめ決めておかないと、惰性で使い続けるコストが積み上がる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自組織で使われているAIツールを3つ以上洗い出し、機能・コスト・安全性の観点で簡単な比較表を作ってみる。所要目安: 40分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>規約</h3>
+      <div class="chips"><span class="chip">生成コードの扱い方</span>
+            <span class="chip">レビュー必須範囲</span>
+            <span class="chip">テスト必須範囲</span>
+            <span class="chip">コミットへの記載有無</span>
+            <span class="chip">AI生成部分の識別方法</span></div>
+      <div class="prose"><p>規約は、AIが生成したコードをどう扱うかについての具体的なルールブックである。利用ガイドラインが「使ってよいか」を扱うのに対し、規約は「使ったコードをどう処理するか」というより実務に踏み込んだ層を扱う。</p>
+            <p>個々のエンジニアが良識に従って生成コードをレビューしていても、その基準が人によってバラバラでは品質は安定しない。<strong>生成コードの扱い方</strong>や<strong>レビュー必須範囲</strong>、<strong>テスト必須範囲</strong>を組織として定義することで、誰が書いたコードでも同じ水準の検証を通過させられる。これは個々のレビュー能力の総和ではなく、プロセスとして担保される品質である。</p>
+            <p>実務でよく議論になるのは<strong>コミットへの記載有無</strong>だ。生成であることを明示するか、通常のコミットと区別しないかは、後から障害調査や監査を行う際の追跡性に直結する。<strong>AI生成部分の識別方法</strong>を決めておかないと、後で「このコードは誰がどう書いたのか」が分からなくなり、責任の所在を追えなくなる落とし穴がある。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分のチームの「生成コードのレビュー必須範囲」がどう決まっているか確認し、曖昧な点があれば同僚と話し合ってみる。所要目安: 20分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>カタログ整備</h3>
+      <div class="chips"><span class="chip">社内MCPサーバー一覧</span>
+            <span class="chip">使い方と必要権限</span>
+            <span class="chip">問い合わせ先</span>
+            <span class="chip">利用実績</span>
+            <span class="chip">非推奨のマーキング</span></div>
+      <div class="prose"><p>カタログ整備とは、社内で利用可能なAI関連の資産——ツール、MCPサーバー、テンプレートなど——を一覧化し、誰でも探せる状態にすることを指す。<strong>社内MCPサーバー一覧</strong>のように、個々のチームが独自に作った便利な仕組みを他のチームが知らずに車輪の再発明をしてしまう事態を防ぐ役割を持つ。</p>
+            <p>ある一人のエンジニアが優れた社内ツールを作ったとしても、それが個人の知識としてしか存在しなければ組織の力にはならない。<strong>使い方と必要権限</strong>や<strong>問い合わせ先</strong>を添えてカタログ化し、誰でも発見・利用できる状態にして初めて、組織全体の生産性に寄与する。</p>
+            <p>陥りがちな失敗は、カタログを作った時点で満足し、更新を止めてしまうことだ。<strong>利用実績</strong>を可視化して人気のある資産と使われていない資産を区別し、古くなったものには<strong>非推奨のマーキング</strong>を付けないと、カタログ自体が信頼できない情報源になり、誰も見なくなってしまう。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自組織で使える社内ツールやMCPサーバーを3つ以上リストアップし、使い方と問い合わせ先を添えたミニカタログを作ってみる。所要目安: 40分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://www.meti.go.jp/shingikai/mono_info_service/ai_shakai_jisso/pdf/20260331_1.pdf">AI事業者ガイドライン</a>
+          <span class="domain">meti.go.jp</span>
+          <p class="desc">経済産業省・総務省による公式のAI利用ガイドラインで、社内ルール策定時の基準として参照できる</p>
+        </li>
+        <li>
+          <a href="https://start-link.jp/hubspot-ai/ai/ai-governance/ai-usage-guideline-creation">企業のAI利用ガイドライン策定ガイド｜社内ルールの作り方と運用のポイント</a>
+          <span class="domain">start-link.jp</span>
+          <p class="desc">許可・禁止用途の切り分けなど、社内ガイドラインの具体的な作り方がわかる</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/ctc-s-katase/items/4f291321e576b7a7d14b">プロンプトのテンプレートを共有できる社内ポータルを作ってみた</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">共通プロンプト集を組織で共有する仕組みづくりの実例がわかる</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/aokikenichi/items/fca5a1898cc2a9c961f6">生成AI・LLM必須リンク集2026</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">情報やツールをカタログ的に整理する際の参考になるリンク集の一例</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../study-10.html">← レイヤー概要</a>
+      <a href="g2.html">2. 教育・人材育成 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>計算理論・言語処理系 — エンジニアリング基礎 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-00.html">← Layer 00 概要</a>
+    <a href="../ai-skillset.html#L00">チェックリストで見る</a>
+    <span class="strip"><a href="../study-00.html" class="current">00 基礎</a>
+    <a href="../study-01.html">01 実務開発力</a>
+    <a href="../study-02.html">02 プロジェクト遂行</a>
+    <a href="../study-03.html">03 LLM理解</a>
+    <a href="../study-04.html">04 プロンプト</a>
+    <a href="../study-05.html">05 実務</a>
+    <a href="../study-06.html">06 エージェント</a>
+    <a href="../study-07.html">07 評価</a>
+    <a href="../study-08.html">08 セキュリティ</a>
+    <a href="../study-09.html">09 コスト</a>
+    <a href="../study-10.html">10 組織</a>
+    <a href="../study-11.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 00 / エンジニアリング基礎 — 12 of 12</p>
+    <h1>計算理論・言語処理系</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>文字列処理・正規表現</h3>
+      <div class="chips"><span class="chip">正規表現の記法</span>
+            <span class="chip">バックトラッキング型エンジンとDFA型エンジン<span class="gl">有限オートマトン</span>の違い</span>
+            <span class="chip">カタストロフィックバックトラッキング<span class="gl">指数的に遅くなる罠</span></span>
+            <span class="chip">文字列検索アルゴリズム<span class="gl">KMP法・Boyer-Moore法</span></span>
+            <span class="chip">Unicode正規表現の注意点</span></div>
+      <div class="prose"><p>正規表現は文字列のパターンを記述する記法であり、実装にはバックトラッキング型エンジンと有限オートマトンによるDFA型エンジンの2種類があり、両者の違いは性能特性に直結する。バックトラッキング型エンジンでは特定のパターンが入力長に対して指数的に遅くなるカタストロフィックバックトラッキングという罠があり、文字列検索アルゴリズムにはKMP法やBoyer-Moore法があり、Unicodeを扱う正規表現には文字の境界や結合文字に関する注意点がある。</p>
+            <p>正規表現はバリデーションやログ解析など実務のあらゆる場面で使われる一方、その内部動作を理解していないと重大な性能問題やセキュリティリスクを見落とす。特にAIが生成した正規表現がカタストロフィックバックトラッキングを引き起こす形になっていないかを判定する力は、外部入力を正規表現で検証するシステムにおいてサービス停止を防ぐために不可欠である。</p>
+            <p>実務での落とし穴は、AIが提案した一見もっともらしい正規表現が、ネストした繰り返し（例えば(a+)+のような構造）を含んでいて、特定の入力に対して処理が固まってしまうことである。このようなReDoS（正規表現によるサービス拒否）の危険性を判定するには、バックトラッキング型エンジンの動作原理を理解している必要があり、単に正規表現が「動く」ことを確認するだけでは不十分である。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>(a+)+のようなネストした繰り返しを含む正規表現を書き、少し長い非マッチ文字列を与えてカタストロフィックバックトラッキングで処理が固まることを実際に体験する。所要目安: 45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>コンパイラ・インタプリタの基礎</h3>
+      <div class="chips"><span class="chip">字句解析<span class="gl">文字列をトークン列に分割</span></span>
+            <span class="chip">構文解析<span class="gl">トークン列を木構造に</span></span>
+            <span class="chip">抽象構文木<span class="gl">AST</span></span>
+            <span class="chip">型検査の仕組み</span>
+            <span class="chip">バイトコードとJIT<span class="gl">実行時にネイティブコードへ変換</span>コンパイル</span>
+            <span class="chip">ガベージコレクションのアルゴリズム分類</span></div>
+      <div class="prose"><p>字句解析は文字列をトークンという単位に分割する処理、構文解析はトークン列を木構造に組み立てる処理であり、その結果得られる抽象構文木（AST）はプログラムの構造を表現する。型検査はASTを走査して型の整合性を確認する仕組み、バイトコードは中間表現としてのコード、JITコンパイルは実行時にネイティブコードへ変換して高速化する技術であり、ガベージコレクションのアルゴリズムにはいくつかの分類がある。</p>
+            <p>自分が使う言語やフレームワークが内部でどう動いているかを知ることは、原因不明のバグやエラーメッセージに直面したときの理解の解像度を大きく上げる。AIが生成したコード内のリンタやフォーマッタ、トランスパイラの設定を扱う際にも、これらのツールがASTを扱っていることを理解していると、設定の意図や制約を正しく読み解ける。</p>
+            <p>実務で直接コンパイラを実装する機会は少ないが、ESLintのカスタムルールやコード変換ツール（codemod）を書く際にはASTの理解が直接必要になる。JITコンパイルの仕組みを知っていれば、なぜ同じコードでも実行回数を重ねると速くなるのかといったパフォーマンスの謎を説明でき、ベンチマークの解釈を誤らずに済む。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>簡単な四則演算の文字列を字句解析→構文解析してASTを組み立てる、小さな電卓パーサーを書いてみる。所要目安: 2時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>暗号技術の基礎</h3>
+      <div class="chips"><span class="chip">共通鍵暗号と公開鍵暗号の違い</span>
+            <span class="chip">ハッシュ関数の性質<span class="gl">一方向性・衝突耐性</span></span>
+            <span class="chip">デジタル署名の仕組み</span>
+            <span class="chip">鍵交換の考え方</span>
+            <span class="chip">乱数生成の安全性<span class="gl">暗号論的擬似乱数</span></span>
+            <span class="chip">暗号の危殆化<span class="gl">解読可能になること</span>と移行</span></div>
+      <div class="prose"><p>共通鍵暗号は同じ鍵で暗号化と復号を行う方式、公開鍵暗号は公開鍵と秘密鍵の組を使う方式であり、ハッシュ関数は一方向性と衝突耐性という性質を持つ。デジタル署名はハッシュ関数と公開鍵暗号を組み合わせてデータの真正性を証明する仕組み、鍵交換は安全に共通鍵を共有するための考え方、乱数生成の安全性は暗号論的擬似乱数を使うかどうかで大きく変わり、暗号アルゴリズムは計算機の進歩によって解読可能になる危殆化が起こるため、定期的な移行が必要になる。</p>
+            <p>暗号技術はパスワード保存、通信の暗号化、トークンの署名など、セキュリティの根幹を支える技術であり、これを表面的にしか理解していないと「動いているから安全」という誤った安心感を持ってしまう。AIが生成したコードが乱数生成に暗号論的に安全でない関数（Math.randomなど）をセキュリティ用途で使っていないかを見抜く力は、この基礎知識があって初めて可能になる。</p>
+            <p>実務での落とし穴は、パスワードのハッシュ化に高速なハッシュ関数（総当たり攻撃に弱い）を使ってしまうことや、暗号論的に安全でない乱数生成器をトークン発行に使ってしまうことである。暗号の危殆化は自分たちのコードが変わらなくても外部要因（計算機の進化）によって安全性が失われるという特殊な性質を持ち、定期的なアルゴリズムの見直しを運用に組み込む必要がある。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>パスワードのハッシュ化に高速なハッシュ関数(MD5等)と低速なbcryptを使い分け、総当たり攻撃のシミュレーションでどちらが安全かを体感する。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>分散合意・分散システム理論</h3>
+      <div class="chips"><span class="chip">合意アルゴリズム<span class="gl">Paxos・Raft</span>の目的</span>
+            <span class="chip">リーダー選出</span>
+            <span class="chip">レプリケーション<span class="gl">複製</span>と一貫性モデル</span>
+            <span class="chip">分断耐性の考え方</span>
+            <span class="chip">べき等でない操作の分散環境での扱い</span>
+            <span class="chip">時計のずれと因果関係<span class="gl">ベクタークロック等</span></span></div>
+      <div class="prose"><p>PaxosやRaftといった合意アルゴリズムは、複数のノードが単一の正しい値について合意を形成することを目的とし、リーダー選出はその中でも中心的な役割を担うノードを決める仕組みである。レプリケーションはデータを複数箇所に複製する仕組みで、複製されたデータがどこまで一貫性を保つかを定める一貫性モデルとセットで語られ、分断耐性はネットワークが分断されても動作し続ける考え方、べき等でない操作の分散環境での扱い、時計のずれと因果関係を捉えるベクタークロックなどの概念もこの分野の理論的基盤である。</p>
+            <p>マイクロサービスや分散データベースを運用する組織では、これらの理論を知らずに「なぜこのデータベースはリーダーが落ちると一時的に書き込めなくなるのか」を説明できないことがある。AIが分散システムのアーキテクチャを提案する際、その合意アルゴリズムの選択がシステムの一貫性要件と可用性要件に見合っているかを判断するには、この理論的背景の理解が前提になる。</p>
+            <p>実務で自らRaftを実装する機会はほとんどないが、etcdやKubernetesのコントロールプレーンがRaftを使っていることを知っていれば、リーダー切り替え時の一時的な不安定さを障害として誤報告せずに済む。分散合意の理論はやや抽象的だが、なぜ分散データベースのクラスタ構成にノード数の奇数制約があるのかといった実務上の疑問に答えるための基礎になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>etcdやRedisのクラスタを手元で3ノード構成し、リーダーノードを1つ落として再選出が起きる様子を観察する。所要目安: 1.5時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>圧縮・エンコーディング</h3>
+      <div class="chips"><span class="chip">可逆圧縮と非可逆圧縮の違い</span>
+            <span class="chip">ハフマン符号化<span class="gl">頻度に応じた符号割当</span>の考え方</span>
+            <span class="chip">ランレングス符号化</span>
+            <span class="chip">辞書式圧縮<span class="gl">LZ系</span>の仕組み</span>
+            <span class="chip">画像・動画圧縮の基礎概念</span>
+            <span class="chip">圧縮率とCPU負荷のトレードオフ</span></div>
+      <div class="prose"><p>可逆圧縮は元のデータを完全に復元できる圧縮方式、非可逆圧縮は一部の情報を失う代わりに高い圧縮率を得る方式である。ハフマン符号化は出現頻度に応じて短い符号を割り当てる考え方、ランレングス符号化は同じ値の連続を回数で表現する手法、LZ系の辞書式圧縮は過去に出現したパターンを辞書として参照する仕組みであり、画像・動画圧縮にはこれらを応用した基礎概念があり、圧縮率とCPU負荷は常にトレードオフの関係にある。</p>
+            <p>通信量やストレージコストが直接的な事業コストに跳ね返る現代のシステムでは、適切な圧縮方式の選択がコスト最適化の重要な要素になる。AIがログの保存形式や画像配信の設定を提案する際に、可逆性が必要な用途に非可逆圧縮を使っていないか、CPU負荷とのトレードオフを考慮した圧縮レベルになっているかを判断する力が求められる。</p>
+            <p>実務での落とし穴は、ログやバックアップのような可逆性が必須のデータに非可逆圧縮を誤って適用してしまうことや、圧縮率を追求しすぎてCPU負荷が上がりレスポンスタイムが悪化することである。圧縮アルゴリズムの特性（テキストに強いのか、既に圧縮済みのバイナリには効果が薄いのか）を理解していれば、無駄な二重圧縮を避けるといった細かいが効果的な最適化ができる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>同じテキストファイルと画像ファイルをgzip(可逆)とJPEG再圧縮(非可逆)で圧縮し、圧縮率と復元可能性の違いを比較する。所要目安: 45分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://techracho.bpsinc.jp/hachi8833/2026_02_19/156562">はじめての正規表現とベストプラクティス11: 最もシンプルなReDoSと回避方法</a>
+          <span class="domain">techracho.bpsinc.jp</span>
+          <p class="desc">ReDoSが起きる仕組みと回避策を具体例で学べる</p>
+        </li>
+        <li>
+          <a href="https://www.hpcs.cs.tsukuba.ac.jp/~msato/lecture-note/comp-lecture/note2.html">字句解析の基礎：正規表現によるパターンマッチ</a>
+          <span class="domain">hpcs.cs.tsukuba.ac.jp</span>
+          <p class="desc">字句解析が正規表現の応用であることを講義資料で理解できる</p>
+        </li>
+        <li>
+          <a href="https://zenn.dev/jj_tomson/articles/72110e60927fa6">入門Raft</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">分散合意アルゴリズムRaftの目的とリーダー選出の仕組みを学べる</p>
+        </li>
+        <li>
+          <a href="https://techblog.ap-com.co.jp/entry/2025/06/16/093000">眠れなくなるほど面白い暗号化技術 第4回 - 公開鍵暗号 RSAが拓いた新たな世界</a>
+          <span class="domain">techblog.ap-com.co.jp</span>
+          <p class="desc">公開鍵暗号の考え方を身近な例えでわかりやすく学べる</p>
+        </li>
+        <li>
+          <a href="https://hackson.jp/huffman/">ハフマン符号とは？圧縮の仕組み・ハフマン木の作り方・平均符号長の計算まで解説</a>
+          <span class="domain">hackson.jp</span>
+          <p class="desc">可逆圧縮の代表例であるハフマン符号化の仕組みを手順つきで学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="g11.html">← 11. コード読解力</a>
+      <a href="../study-00.html">レイヤー概要に戻る →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

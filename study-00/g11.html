@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>コード読解力 — エンジニアリング基礎 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../study-00.html">← Layer 00 概要</a>
+    <a href="../ai-skillset.html#L00">チェックリストで見る</a>
+    <span class="strip"><a href="../study-00.html" class="current">00 基礎</a>
+    <a href="../study-01.html">01 実務開発力</a>
+    <a href="../study-02.html">02 プロジェクト遂行</a>
+    <a href="../study-03.html">03 LLM理解</a>
+    <a href="../study-04.html">04 プロンプト</a>
+    <a href="../study-05.html">05 実務</a>
+    <a href="../study-06.html">06 エージェント</a>
+    <a href="../study-07.html">07 評価</a>
+    <a href="../study-08.html">08 セキュリティ</a>
+    <a href="../study-09.html">09 コスト</a>
+    <a href="../study-10.html">10 組織</a>
+    <a href="../study-11.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 00 / エンジニアリング基礎 — 11 of 12</p>
+    <h1>コード読解力</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>未知のコードベースを読む</h3>
+      <div class="chips"><span class="chip">エントリポイント<span class="gl">処理の入り口</span>の特定</span>
+            <span class="chip">ディレクトリ構造から責務を推測</span>
+            <span class="chip">呼び出しグラフ<span class="gl">どこから呼ばれるか</span>の追跡</span>
+            <span class="chip">データの流れの追跡</span>
+            <span class="chip">デバッガ<span class="gl">実行を止めて中を見る道具</span>での動的確認</span>
+            <span class="chip">ログ挿入による確認</span>
+            <span class="chip">テストコードから仕様を読む</span>
+            <span class="chip">git log と blame<span class="gl">行ごとの変更履歴</span>で経緯を知る</span></div>
+      <div class="prose"><p>見慣れないコードベースに向き合う際は、まず処理の入り口であるエントリポイントを特定し、ディレクトリ構造から各部分の責務を推測することから始める。呼び出しグラフを追ってどこから呼ばれているかを把握し、データの流れを追跡し、必要に応じてデバッガで実行を止めながら動的に確認したりログを挿入して確認したりする。テストコードは仕様書代わりに読むことができ、git logとblameで変更の経緯を辿ることで「なぜ今の形になっているか」という歴史的な文脈も理解できる。</p>
+            <p>エンジニアリング組織にAIを導入する上で最重要となるのは、AIが書いたコードを人間が高速に読み、その意図と欠陥を見抜く力であり、これは自分でゼロから書く力とは似て非なる独立したスキルである。AIは大量のコードを一瞬で生成できるが、それが意図通りかを確認する速度が人間側の読解力に律速される以上、この能力こそがAI活用のROIを決定づけるボトルネックになる。</p>
+            <p>実務での勘所は、いきなり全体を理解しようとせず、まず一つの具体的なユースケースを選んでエントリポイントからデータの流れを一本追いかけることである。AIが生成した大量の差分をレビューする際も、この「一つの筋を追う」読み方を応用し、テストコードとgit blameを併用して変更の妥当性を短時間で判断する訓練を積むことが、AI時代のエンジニアに最も求められる基礎体力となる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>触ったことのないOSSリポジトリを1つ選び、README→ディレクトリ構成→エントリポイントの順に読み、1つのユースケースのデータの流れを最後まで追いかける。所要目安: 1.5時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>欠陥を見抜く</h3>
+      <div class="chips"><span class="chip">境界値<span class="gl">0件・1件・上限</span></span>
+            <span class="chip">null・空文字・未定義の扱い</span>
+            <span class="chip">例外パスとエラーハンドリング<span class="gl">異常時処理</span></span>
+            <span class="chip">並行処理の競合</span>
+            <span class="chip">N+1クエリ</span>
+            <span class="chip">副作用<span class="gl">他へ及ぶ影響</span>の見落とし</span>
+            <span class="chip">型の暗黙変換</span>
+            <span class="chip">タイムゾーンと丸め誤差</span></div>
+      <div class="prose"><p>コードの欠陥を見抜く際には、0件・1件・上限といった境界値の扱い、null・空文字・未定義の扱い、例外パスとエラーハンドリングの妥当性、並行処理における競合、N+1クエリ、他へ及ぶ影響である副作用の見落とし、型の暗黙変換、タイムゾーンや丸め誤差といった観点を一つずつ確認していく。</p>
+            <p>これらは人間のコードでもAIが生成したコードでも変わらず発生する典型的な欠陥パターンであり、AIは特に境界値やエラーハンドリングを「正常系はもっともらしいが異常系が抜けている」形で生成しがちなため、この観点リストを持っているかどうかがAI生成コードのレビュー品質を直接左右する。</p>
+            <p>実務での勘所は、コードを読むときに常に「この値が0だったら」「このリストが空だったら」「この処理が同時に2回呼ばれたら」と自問する習慣を持つことである。AIが生成したコードは表面上は動くように見えることが多いため、意図的にこれらの境界条件を頭の中でテストしながら読む訓練を積むことが、欠陥を見抜く力を鍛える最も実践的な方法である。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>AIに小さな関数を生成させ、0件・null・同時呼び出しの3パターンを自分の手でテストし、生成コードが想定通り動くかを検証する。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://qiita.com/kotaro_ai_lab/items/d3528b88f30512e67731">初めて入る現場の巨大なコードベースの読み方 ― 「横に広く」ではなく「縦に1本」通す5ステップ</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">未知のコードベースを1本の筋で追いかける実践的な手順を学べる</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/KuwadaKouhei/items/25ee5b90ff4eabc2b7dd">コードリーディングのすすめ 〜「読む力」で伸びるエンジニアになる実践ガイド〜</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">コードを読む力を体系的に鍛えるための考え方を学べる</p>
+        </li>
+        <li>
+          <a href="https://www.atlassian.com/ja/git/tutorials/inspecting-a-repository/git-blame">Git blame｜アトラシアン Git チュートリアル</a>
+          <span class="domain">atlassian.com</span>
+          <p class="desc">git blameで変更の経緯を辿る具体的な使い方がわかる</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/miyase256/items/e47792be2204f4492258">コードリーディングの方法・コツ</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">エントリポイントの特定からデバッガ活用までのコツをまとめて学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="g10.html">← 10. セキュリティ基礎</a>
+      <a href="g12.html">12. 計算理論・言語処理系 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>
