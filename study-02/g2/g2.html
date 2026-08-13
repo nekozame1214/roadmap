@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>見積もり・計画 — プロジェクト遂行・組織コミュニケーション — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../../index.html">← 一覧に戻る</a>
+    <a href="../../ai-skillset.html#L02">チェックリストで見る</a>
+    <span class="strip"><a href="../../study-00/g1/g1.html">00 基礎</a>
+    <a href="../../study-01/g1/g1.html">01 実務開発力</a>
+    <a href="../../study-02/g1/g1.html" class="current">02 プロジェクト遂行</a>
+    <a href="../../study-03/g1/g1.html">03 LLM理解</a>
+    <a href="../../study-04/g1/g1.html">04 プロンプト</a>
+    <a href="../../study-05/g1/g1.html">05 実務</a>
+    <a href="../../study-06/g1/g1.html">06 エージェント</a>
+    <a href="../../study-07/g1/g1.html">07 評価</a>
+    <a href="../../study-08/g1/g1.html">08 セキュリティ</a>
+    <a href="../../study-09/g1/g1.html">09 コスト</a>
+    <a href="../../study-10/g1/g1.html">10 組織</a>
+    <a href="../../study-11/g1/g1.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 02 / プロジェクト遂行・組織コミュニケーション — 2 of 7</p>
+    <h1>見積もり・計画</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>工数見積もり手法</h3>
+      <div class="chips"><span class="chip">類推見積もり<span class="gl">過去実績からの類推</span></span>
+            <span class="chip">三点見積もり<span class="gl">楽観・悲観・最頻値</span></span>
+            <span class="chip">プランニングポーカー<span class="gl">相対見積もりの合議</span></span>
+            <span class="chip">見積もりと実績の差分分析</span>
+            <span class="chip">見積もりの前提を明示する習慣</span></div>
+      <div class="prose"><p>工数見積もりとは、作業にどれだけの時間・人員がかかるかを事前に予測する技術で、勘に頼るのではなく再現性のある手法を使うことが求められる。代表的な手法に、過去の類似案件を基準にする類推見積もり<span class="gl">過去実績からの類推</span>や、楽観値・悲観値・最頻値の3つから算出する三点見積もり<span class="gl">楽観・悲観・最頻値</span>がある。</p>
+            <p>チームで見積もる場合は、プランニングポーカー<span class="gl">相対見積もりの合議</span>のように各自が独立に見積もった数値を出し合い、乖離があれば議論する手法が有効である。声の大きい人の意見に引きずられず、多様な視点を反映できる点が実務上のメリットである。</p>
+            <p>見積もり精度は一度で完成するものではなく、見積もりと実績の差分分析を続けることでチームの見積もり筋力が上がっていく。またどんな見積もりにも「この前提が崩れなければ」という条件があるため、見積もりの前提を明示する習慣を持つことが重要である。前提を書いておけば、後で状況が変わったときに見積もりを再検討すべきタイミングが明確になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>直近1〜2週間で完了したタスクを1つ選び、三点見積もり(楽観・悲観・最頻値)で当時見積もっていたら実績にどれだけ近づいたかを逆算してみる。所要時間の目安: 30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>バッファ・リスクの織り込み</h3>
+      <div class="chips"><span class="chip">既知のリスクへのバッファ</span>
+            <span class="chip">未知の作業への予備時間</span>
+            <span class="chip">過度な楽観の補正</span>
+            <span class="chip">並行作業の依存待ちを考慮</span>
+            <span class="chip">クリティカルパス<span class="gl">全体日程を決める工程列</span>の把握</span></div>
+      <div class="prose"><p>バッファとは、計画に意図的に組み込む余裕時間のことで、見積もりの不確実性を吸収する役割を持つ。既知のリスクへのバッファと、想定していなかった作業のための未知の作業への予備時間は、性質が異なるため分けて考える必要がある。</p>
+            <p>見積もりが甘くなりがちな最大の理由は、過度な楽観の補正が効いていないことにある。人は自分の作業を過小評価しがちであり、経験豊富なリードほど、そのバイアスを補正する術を身につけている。これは技術力とは別の、プロジェクトを守るための実務スキルである。</p>
+            <p>バッファを置く場所も重要な判断で、並行作業の依存待ちを考慮せずに各タスクへ均等にバッファを分散させると、実際には効果を発揮しない。全体日程を決めるクリティカルパス<span class="gl">全体日程を決める工程列</span>の把握を行い、そこに集中してバッファを配置することで、限られた余裕を最大限に活かせる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>今後着手予定のタスクのスケジュールに、既知のリスク用バッファと未知の作業用の予備時間をそれぞれ何%乗せるかを決め、理由をメモに残す。所要時間の目安: 20分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>スケジュール設計</h3>
+      <div class="chips"><span class="chip">逆算での日程設計</span>
+            <span class="chip">マイルストーン<span class="gl">節目</span>の設定</span>
+            <span class="chip">依存関係を踏まえた順序決め</span>
+            <span class="chip">バッファの配置場所</span>
+            <span class="chip">遅延の早期検知指標</span></div>
+      <div class="prose"><p>スケジュール設計は、見積もった工数を実際のカレンダー上に配置し、いつ何をやるかを決める作業である。多くの現場では、リリース日から逆算での日程設計を行い、そこから逆算していつまでに何を終えるべきかを導き出す。</p>
+            <p>単に日付を割り振るだけでなく、進捗確認の節目となるマイルストーン<span class="gl">節目</span>の設定を行うことで、プロジェクトが順調かどうかを定期的に検証できるようにする。マイルストーンがないスケジュールは、終盤まで問題が表面化しない危険な計画になりやすい。</p>
+            <p>タスクをただ並べるのではなく、依存関係を踏まえた順序決めを行い、どこにバッファの配置場所を設けるかを意図的に設計する。さらに、計画が狂い始めたことをできるだけ早く察知できるよう、遅延の早期検知指標をあらかじめ決めておくと、手遅れになる前に軌道修正の判断ができる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>直近のプロジェクトやタスクについて、リリース日から逆算してマイルストーンを3つ設定し、依存関係のある工程に印をつけてクリティカルパスを可視化する。所要時間の目安: 40分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://www.issoh.co.jp/column/details/11019/">プロジェクト規模と開発体制に応じた工数見積もり手法の全体像</a>
+          <span class="domain">issoh.co.jp</span>
+          <p class="desc">類推法・三点見積もり・プランニングポーカーなど見積もり手法を体系的に学べる</p>
+        </li>
+        <li>
+          <a href="https://www.mof-mof.co.jp/column/agile-estimation-planning-poker/">みんなで見積もれ！アジャイルな見積もり手法「プランニングポーカー」のやり方</a>
+          <span class="domain">mof-mof.co.jp</span>
+          <p class="desc">プランニングポーカーの具体的な進め方が学べる</p>
+        </li>
+        <li>
+          <a href="https://backlog.com/ja/blog/what-is-critical-path/">クリティカルパスとは？工程管理で重要な理由と具体的な求め方</a>
+          <span class="domain">backlog.com</span>
+          <p class="desc">クリティカルパスの求め方とスケジュール管理への活用法が学べる</p>
+        </li>
+        <li>
+          <a href="https://www.freee.co.jp/kb/kb-hanbai-kanri/critical-path/">クリティカルパスとは？基本知識やメリット、具体的な求め方までわかりやすく解説</a>
+          <span class="domain">freee.co.jp</span>
+          <p class="desc">クリティカルパスの基礎知識を初心者向けに学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../g1/g1.html">← g1 前のグループ</a>
+      <a href="../g3/g3.html">g3 次のグループ →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

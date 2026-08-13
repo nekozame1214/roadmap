@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ツールチェーン・開発生産性 — 実務ソフトウェア開発力 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../../index.html">← 一覧に戻る</a>
+    <a href="../../ai-skillset.html#L01">チェックリストで見る</a>
+    <span class="strip"><a href="../../study-00/g1/g1.html">00 基礎</a>
+      <a href="../../study-01/g1/g1.html" class="current">01 実務開発力</a>
+      <a href="../../study-02/g1/g1.html">02 プロジェクト遂行</a>
+      <a href="../../study-03/g1/g1.html">03 LLM理解</a>
+      <a href="../../study-04/g1/g1.html">04 プロンプト</a>
+      <a href="../../study-05/g1/g1.html">05 実務</a>
+      <a href="../../study-06/g1/g1.html">06 エージェント</a>
+      <a href="../../study-07/g1/g1.html">07 評価</a>
+      <a href="../../study-08/g1/g1.html">08 セキュリティ</a>
+      <a href="../../study-09/g1/g1.html">09 コスト</a>
+      <a href="../../study-10/g1/g1.html">10 組織</a>
+      <a href="../../study-11/g1/g1.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 01 / 実務ソフトウェア開発力 — 6 of 6</p>
+    <h1>ツールチェーン・開発生産性</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>IDE・エディタ活用</h3>
+      <div class="chips"><span class="chip">ショートカットの習熟</span>
+            <span class="chip">静的解析との連携表示</span>
+            <span class="chip">デバッガの統合活用</span>
+            <span class="chip">スニペット<span class="gl">定型コード</span>の整備</span>
+            <span class="chip">拡張機能の取捨選択</span></div>
+      <div class="prose"><p>IDE・エディタ活用とは、日々のコーディングで最も長い時間を過ごす道具を使いこなす技術であり、地味だが積み重なると開発速度に大きな差を生む。<strong>ショートカットの習熟</strong>によってマウスとキーボードの往復を減らすだけでも、1日を通した作業効率は着実に上がる。</p>
+            <p>一人前のエンジニアは、エディタに組み込まれた<strong>静的解析との連携表示</strong>を活用し、コードを書きながらリアルタイムに型エラーや潜在的なバグの兆候を確認する。コードを書いてから別途チェックを走らせるより、はるかに早いフィードバックループを回せる。</p>
+            <p>実務では<strong>デバッガの統合活用</strong>によって、ログを埋め込んでは消すという原始的なデバッグから解放される。また繰り返し書く定型コードを登録しておく<strong>スニペットの整備</strong>や、本当に必要なものだけに絞る<strong>拡張機能の取捨選択</strong>も重要で、便利そうな拡張機能を無節操に入れすぎるとエディタ自体が重くなり、本末転倒になることがある。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>使用中のエディタでよく使う操作のショートカットを5つ選んで覚え、1日の作業で実際に使ってみる。繰り返し書いている定型コードを1つスニペットとして登録する。所要目安30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>デバッガ実務</h3>
+      <div class="chips"><span class="chip">ブレークポイント<span class="gl">実行を止める地点</span>の使い分け</span>
+            <span class="chip">条件付きブレークポイント</span>
+            <span class="chip">ステップ実行の使い分け</span>
+            <span class="chip">呼び出しスタックの読み方</span>
+            <span class="chip">本番環境でのデバッグ手法の制約</span></div>
+      <div class="prose"><p>デバッガとは、プログラムの実行を任意の地点で止めて内部状態を確認できるツールである。基本となる<strong>ブレークポイントの使い分け</strong>を覚えると、print文を差し込んでは消す作業から解放され、実行中の変数の値をその場で確認できる。</p>
+            <p>一人前のエンジニアは、ループの100回目だけ止めたいといった場面で<strong>条件付きブレークポイント</strong>を使い、無駄に手動でステップを繰り返す時間を省く。また関数の中に入る・またぐ・抜けるといった<strong>ステップ実行の使い分け</strong>を状況に応じて選べることで、原因調査の効率が大きく変わる。</p>
+            <p>実務では、エラーが起きたときにどの関数がどの順番で呼ばれてきたかを示す<strong>呼び出しスタックの読み方</strong>が原因特定の近道になる。一方で、開発環境と違って<strong>本番環境でのデバッグ手法の制約</strong>があることも理解しておく必要がある。本番でブレークポイントを使って処理を止めればユーザーへの応答も止まってしまうため、ログやトレースなど本番向けの別の手段を使い分ける判断力が求められる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>ループ処理の途中に条件付きブレークポイント（例: 特定のインデックスでのみ停止）を設定し、狙った条件でのみ処理を止めて変数の値を確認する。その際の呼び出しスタックを1つ読み解いてメモする。所要目安30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>モノレポ運用</h3>
+      <div class="chips"><span class="chip">パッケージ間の依存管理</span>
+            <span class="chip">変更影響範囲の特定</span>
+            <span class="chip">ビルド・テストの選択実行</span>
+            <span class="chip">バージョニング方針</span>
+            <span class="chip">権限とオーナーシップの分離</span></div>
+      <div class="prose"><p>モノレポとは、複数のプロジェクトやパッケージを1つのリポジトリにまとめて管理する運用形態である。複数の内部パッケージが互いを参照する<strong>パッケージ間の依存管理</strong>を整理しておかないと、どのパッケージがどのパッケージに依存しているのか把握できなくなる。</p>
+            <p>一人前のエンジニアがモノレポで意識すべきなのは<strong>変更影響範囲の特定</strong>だ。1つのパッケージへの変更が他のどのパッケージに波及するかを追跡できないと、意図しない箇所を壊してしまうリスクが高まる。この特定ができていれば、変更されたパッケージとその依存先だけを対象に<strong>ビルド・テストの選択実行</strong>を行い、リポジトリ全体を毎回ビルドする無駄を省ける。</p>
+            <p>実務では、各パッケージをリポジトリ全体と同じバージョンで揃えるか個別にバージョン管理するかという<strong>バージョニング方針</strong>を決めておく必要がある。また規模が大きくなると、パッケージごとに<strong>権限とオーナーシップの分離</strong>を設け、誰がどのパッケージの変更を承認できるかを明確にしておかないと、レビューの責任があいまいになり品質が保てなくなる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>手元にある（または簡易的に作った）モノレポ構成で2つのパッケージ間の依存関係を確認し、片方のパッケージだけを変更した際に影響を受けるパッケージだけをビルド・テストする設定を試す。所要目安60分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>ローカル開発環境整備</h3>
+      <div class="chips"><span class="chip">環境差異の最小化</span>
+            <span class="chip">シードデータ<span class="gl">初期投入データ</span>の整備</span>
+            <span class="chip">モックサーバーの活用</span>
+            <span class="chip">ホットリロード<span class="gl">保存即反映</span>の設定</span>
+            <span class="chip">オンボーディング時間の短縮</span></div>
+      <div class="prose"><p>ローカル開発環境整備とは、開発者が自分のマシン上でアプリケーションを動かして試せる環境を、本番に近い形で用意する取り組みである。<strong>環境差異の最小化</strong>ができていないと、「自分の環境では動くのに本番やほかの人の環境では動かない」という事故が繰り返される。</p>
+            <p>一人前のエンジニアがこの整備を重視する理由は、開発速度がまさにこの環境の快適さに直結するからだ。動作確認に必要な<strong>シードデータの整備</strong>があれば、毎回手作業でテストデータを作る手間がなくなる。外部サービスに依存する部分は<strong>モックサーバーの活用</strong>によって、ネットワークが不安定でも、あるいは外部サービスの利用料がかかる場合でも、安定して開発を進められる。</p>
+            <p>実務での勘所は、コードを保存した瞬間に変更が画面へ反映される<strong>ホットリロードの設定</strong>によって、変更のたびに手動でビルド・再起動する時間を削ることだ。これらの整備は個人の快適さだけでなく、新しいメンバーが入ったときの<strong>オンボーディング時間の短縮</strong>にも直結する。環境構築に何日もかかるチームと、数十分でセットアップが完了するチームとでは、新メンバーが最初のコミットを出すまでの時間に大きな差が生まれる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>docker-composeで自分のアプリのローカル開発環境を再現し、初期データを投入するシードスクリプトを1つ書く。新規メンバーになったつもりでゼロからセットアップし、完了までの所要時間を計測する。所要目安60分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://zenn.dev/safubuki/articles/turtle-20240121-vscode">VSCodeの魅力を引き出す超厳選ショートカットキーと拡張機能18選！</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">エディタのショートカットと拡張機能による効率化の実例を学べる</p>
+        </li>
+        <li>
+          <a href="https://www.codegrid.net/articles/js-debug-1/">JavaScriptのデバッグ | 第1回 ブレークポイントの使用</a>
+          <span class="domain">codegrid.net</span>
+          <p class="desc">ブレークポイントを使った基本的なデバッグ手順を学べる</p>
+        </li>
+        <li>
+          <a href="https://zenn.dev/katsumanarisawa/articles/b98ba340a218af">Webサービス開発でのmonorepo環境(Turborepo, nx)</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">モノレポツールによる依存管理と変更影響範囲の絞り込みを学べる</p>
+        </li>
+        <li>
+          <a href="https://techblog.kayac.com/developing-with-docker-compose">Dockerで開発環境構築を10倍楽にしたはなし</a>
+          <span class="domain">techblog.kayac.com</span>
+          <p class="desc">Docker Composeでのローカル開発環境整備の実践例を学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../g5/g5.html">← パフォーマンスチューニング実務</a>
+      <a href="../../study-02/g1/g1.html">Layer 02 プロジェクト遂行・組織コミュニケーション →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

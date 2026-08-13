@@ -547,7 +547,7 @@ DATA.forEach(L=>{
   const roleNames=L.roles.map(r=>ROLES.find(x=>x.k===r).n).join(" · ");
   let html=`<div class="layer-head"><div class="layer-n">${L.n}</div>
     <div><h2>${gl(L.t)}</h2><p class="layer-why">${gl(L.why)}</p></div></div>
-    <p class="layer-meta">主対象 <em>${roleNames}</em> ／ <a href="study-${L.n}.html" style="color:inherit">学習資料を読む →</a></p>`;
+    <p class="layer-meta">主対象 <em>${roleNames}</em> ／ <a href="study-${L.n}/g1/g1.html" style="color:inherit">学習資料を読む →</a></p>`;
   L.g.forEach(g=>{
     html+=`<div class="group"><h3>${gl(g.h)}</h3><ul>`;
     g.i.forEach(it=>{

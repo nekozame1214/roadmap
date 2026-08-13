@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OS・低レイヤ — エンジニアリング基礎 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../../index.html">← 一覧に戻る</a>
+    <a href="../../ai-skillset.html#L00">チェックリストで見る</a>
+    <span class="strip"><a href="../../study-00/g1/g1.html" class="current">00 基礎</a>
+    <a href="../../study-01/g1/g1.html">01 実務開発力</a>
+    <a href="../../study-02/g1/g1.html">02 プロジェクト遂行</a>
+    <a href="../../study-03/g1/g1.html">03 LLM理解</a>
+    <a href="../../study-04/g1/g1.html">04 プロンプト</a>
+    <a href="../../study-05/g1/g1.html">05 実務</a>
+    <a href="../../study-06/g1/g1.html">06 エージェント</a>
+    <a href="../../study-07/g1/g1.html">07 評価</a>
+    <a href="../../study-08/g1/g1.html">08 セキュリティ</a>
+    <a href="../../study-09/g1/g1.html">09 コスト</a>
+    <a href="../../study-10/g1/g1.html">10 組織</a>
+    <a href="../../study-11/g1/g1.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 00 / エンジニアリング基礎 — 3 of 12</p>
+    <h1>OS・低レイヤ</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>プロセスと並行処理</h3>
+      <div class="chips"><span class="chip">プロセス<span class="gl">実行中のプログラム</span>とスレッド{その中の実行単位}</span>
+            <span class="chip">コンテキストスイッチ<span class="gl">実行対象の切り替え</span></span>
+            <span class="chip">競合状態<span class="gl">タイミング次第で壊れる状態</span></span>
+            <span class="chip">ミューテックス<span class="gl">排他ロック</span></span>
+            <span class="chip">セマフォ<span class="gl">同時実行数の制限</span></span>
+            <span class="chip">デッドロック<span class="gl">お互い待ち合って止まる</span></span>
+            <span class="chip">非同期処理とイベントループ<span class="gl">待ち時間に他を進める仕組み</span></span></div>
+      <div class="prose"><p>プロセスは実行中のプログラムそのもの、スレッドはその中で並行に実行される処理の単位であり、CPUが実行対象を切り替える際にはコンテキストスイッチと呼ばれるレジスタやメモリ状態の退避・復元が発生する。複数の処理が同じデータに同時にアクセスすることでタイミング次第で結果が壊れる競合状態を防ぐために、排他的にロックするミューテックスや同時実行数を制限するセマフォが使われ、互いに相手の解放待ちで止まってしまうデッドロックはこれらの誤用で起こる。非同期処理とイベントループは待ち時間の間に他の処理を進めることでスレッドを増やさずに並行性を実現する仕組みである。</p>
+            <p>マルチコアが当たり前になった現在、並行処理の理解なしには性能を引き出せず、また競合状態やデッドロックはテストで再現しにくく本番でしか顕在化しないバグの温床になるため、一人前のエンジニアの必須知識である。AIが生成した非同期コードが競合状態を作り込んでいないか、ロックの取得順序がデッドロックを招く構造になっていないかは、コードを読むだけでは気づきにくく、この理論的背景があって初めて見抜ける。</p>
+            <p>実務では、共有状態を極力減らして不変なデータを使う、ロックの粒度を適切に保つ、非同期処理のエラーハンドリングを漏らさないといった原則が重要になる。JavaScriptのイベントループのようにシングルスレッドで非同期を実現する言語もあれば、GoのゴルーチンのようにOSスレッドより軽量な並行単位を持つ言語もあり、この違いを理解していないと移植や性能予測を誤る。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>共有カウンタに対してロックなしで複数スレッドから同時にインクリメントする処理を書いて競合状態で値がずれることを再現し、ミューテックスを入れて修正する。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>メモリ</h3>
+      <div class="chips"><span class="chip">仮想メモリ</span>
+            <span class="chip">スタック<span class="gl">関数呼び出し用の領域</span>とヒープ{自由に確保する領域}</span>
+            <span class="chip">ガベージコレクション<span class="gl">不要メモリの自動回収</span></span>
+            <span class="chip">メモリリーク<span class="gl">解放されず溜まる</span></span>
+            <span class="chip">参照とポインタ<span class="gl">値の場所を指す</span></span>
+            <span class="chip">値渡しと参照渡し</span></div>
+      <div class="prose"><p>仮想メモリはプロセスごとに独立したアドレス空間を見せる仕組みで、実行時にはスタックという関数呼び出しの情報を積む領域と、ヒープという自由に確保・解放できる領域が使い分けられる。ガベージコレクションは不要になったメモリを自動的に回収する仕組みだが、回収漏れが起こるとメモリリークになる。参照とポインタは値そのものではなく値の置き場所を指す概念であり、値渡しと参照渡しの違いはこの参照の扱い方の差として現れる。</p>
+            <p>メモリの挙動を理解していないと、なぜ大きなオブジェクトを関数に渡すとコピーが発生するのか、なぜ長時間稼働のサーバーでメモリ使用量が徐々に増えていくのかを説明できず、本番障害の原因調査で手が止まる。AIが生成したコードで意図せず大きな配列をコピーしていたり、イベントリスナーの解除漏れでメモリリークを埋め込んでいたりするケースは、この基礎知識があって初めて発見できる。</p>
+            <p>実務でのよくある落とし穴は、値渡しのつもりで参照渡しになっているオブジェクトを書き換えてしまい呼び出し元に予期しない影響を与えることや、キャッシュに際限なくデータを溜め込んでメモリリークを起こすことである。ガベージコレクションのあるモダンな言語でも、循環参照やグローバル変数への参照保持が原因でメモリが解放されないケースは実務で頻出する。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>オブジェクトを関数に渡して内部を書き換えるコードを書き、値渡しのつもりが参照渡しになっていて呼び出し元に影響が及ぶ様子を実験して確認する。所要目安: 30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>入出力</h3>
+      <div class="chips"><span class="chip">ファイルディスクリプタ<span class="gl">開いたファイルの番号</span></span>
+            <span class="chip">バッファリング<span class="gl">まとめて読み書き</span></span>
+            <span class="chip">ブロッキングとノンブロッキング</span>
+            <span class="chip">シグナル<span class="gl">プロセスへの通知</span></span>
+            <span class="chip">標準入出力とパイプ<span class="gl">出力を次の入力へ渡す</span></span>
+            <span class="chip">終了コード</span></div>
+      <div class="prose"><p>ファイルディスクリプタはOSが開いているファイルやソケットに割り当てる番号であり、バッファリングはディスクやネットワークへの読み書きをまとめて行うことで効率を上げる仕組みである。ブロッキングはI/Oの完了を待つ間に処理が止まる方式、ノンブロッキングは待たずに次の処理に進む方式で、シグナルはOSからプロセスへの割り込み通知、標準入出力とパイプはコマンドの出力を次のコマンドの入力として渡す仕組み、終了コードはプロセスが正常終了したか異常終了したかを表す数値である。</p>
+            <p>サーバーサイド開発やCLIツール開発では入出力の扱いが性能とロバスト性を大きく左右し、ノンブロッキングI/Oを正しく扱えるかどうかが高負荷なシステムを構築できるかの分かれ目になる。AIが生成したスクリプトが終了コードを正しく返しているか、ファイルディスクリプタを閉じ忘れてリソースリークを起こしていないかは、運用に耐えるコードかどうかを判断する基準になる。</p>
+            <p>よくある落とし穴は、ファイルディスクリプタの開放漏れによる「too many open files」エラーや、バッファリングされた出力がプロセス終了時にフラッシュされずログが欠落する問題である。シェルスクリプトやCLIツールを書く際に終了コードを正しく設計しないと、CI/CDパイプラインで失敗を検知できないといった実務上の事故につながる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>ファイルをcloseせずに大量にオープンし続けるスクリプトを書いて「too many open files」エラーを再現し、with文などで正しく解放するよう修正する。所要目安: 45分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://qiita.com/developer-kikikaikai/items/ad94a56084147f425ede">マルチスレッド、排他制御ってなに？</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">排他制御の必要性を初心者向けに図とセットで理解できる</p>
+        </li>
+        <li>
+          <a href="https://blog.printemps.tokyo/blog/mutex-semaphore-deadlock-exclusive-control-guide">排他制御とデッドロック 入門 - ミューテックス・セマフォから食事する哲学者まで</a>
+          <span class="domain">blog.printemps.tokyo</span>
+          <p class="desc">ミューテックス・セマフォ・デッドロックを具体例で体系的に学べる</p>
+        </li>
+        <li>
+          <a href="https://zenn.dev/a3geek/articles/270d7946b80310">メモリの仕組みと排他制御</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">メモリの動作原理と排他制御を関連づけて理解できる</p>
+        </li>
+        <li>
+          <a href="https://kobesoft.co.jp/mikata/words/system-development/memory-management/">メモリ管理とは</a>
+          <span class="domain">kobesoft.co.jp</span>
+          <p class="desc">スタックとヒープ、ガベージコレクションの役割を短時間で把握できる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../g2/g2.html">← 2. アルゴリズム</a>
+      <a href="../g4/g4.html">4. ネットワーク →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文化・プロセス再設計 — 組織能力 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../../index.html">← 一覧に戻る</a>
+    <a href="../../ai-skillset.html#L10">チェックリストで見る</a>
+    <span class="strip"><a href="../../study-00/g1/g1.html">00 基礎</a>
+    <a href="../../study-01/g1/g1.html">01 実務開発力</a>
+    <a href="../../study-02/g1/g1.html">02 プロジェクト遂行</a>
+    <a href="../../study-03/g1/g1.html">03 LLM理解</a>
+    <a href="../../study-04/g1/g1.html">04 プロンプト</a>
+    <a href="../../study-05/g1/g1.html">05 実務</a>
+    <a href="../../study-06/g1/g1.html">06 エージェント</a>
+    <a href="../../study-07/g1/g1.html">07 評価</a>
+    <a href="../../study-08/g1/g1.html">08 セキュリティ</a>
+    <a href="../../study-09/g1/g1.html">09 コスト</a>
+    <a href="../../study-10/g1/g1.html" class="current">10 組織</a>
+    <a href="../../study-11/g1/g1.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 10 / 組織能力 — 6 of 6</p>
+    <h1>文化・プロセス再設計</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>レビュー文化</h3>
+      <div class="chips"><span class="chip">生成量増加によるレビュー負荷への対応</span>
+            <span class="chip">レビュー分担の見直し</span>
+            <span class="chip">自動チェックの前段化</span>
+            <span class="chip">レビュー時間の確保</span>
+            <span class="chip">レビュアーの育成</span></div>
+      <div class="prose"><p>レビュー文化とは、AIによってコードの生成量が増えた状況に合わせて、レビューのあり方そのものを組織的に見直すことを指す。AI導入前のレビュー体制をそのまま維持していると、レビュアーがボトルネックになる。</p>
+            <p>個々のレビュアーがどれだけ真面目に取り組んでも、そもそも<strong>生成量増加によるレビュー負荷への対応</strong>が組織として設計されていなければ、いずれ処理能力の限界を超える。これは個人の頑張りでは解決できない構造的な問題であり、<strong>レビュー分担の見直し</strong>のようなプロセス設計で対応する必要がある。</p>
+            <p>実務では、人手のレビューの前に<strong>自動チェックの前段化</strong>を進め、機械的に検出できる問題は人が見る前に弾く仕組みが有効だ。レビュー自体の重要性が増す一方で業務は忙しくなる一方なので、意識的に<strong>レビュー時間の確保</strong>を組織としてコミットしないと形骸化する。生成コードのレビューには従来と違う着眼点が必要になるため、<strong>レビュアーの育成</strong>も並行して進めるべき課題だ。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分が最近レビューしたPRの中でAI生成量が多かったものを1つ選び、レビューに要した時間を記録し負荷を可視化してみる。所要目安: 20分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>責任の所在</h3>
+      <div class="chips"><span class="chip">生成コードの責任は投入者にある</span>
+            <span class="chip">承認者の責任範囲</span>
+            <span class="chip">障害時の扱い</span>
+            <span class="chip">説明できない実装を出さない原則</span></div>
+      <div class="prose"><p>責任の所在とは、AIが生成したコードによって問題が起きたとき、誰がその責任を負うのかを組織のルールとして明確化することだ。「AIが書いたから」という言い訳が通用する組織と通用しない組織では、品質に対する緊張感がまったく異なる。</p>
+            <p>個人の倫理観に委ねるだけでは、責任の所在は曖昧になりやすい。<strong>生成コードの責任は投入者にある</strong>という原則を組織として明文化することは、AIを使う個人の心構えの問題ではなく、組織のガバナンスとして設計すべき事項である。</p>
+            <p>レビューして承認した側にも一定の責任は及ぶため、<strong>承認者の責任範囲</strong>をどこまでとするかも整理しておく必要がある。実際に<strong>障害時の扱い</strong>——インシデント対応の指揮系統や説明責任——が決まっていないと、有事の際に混乱が生じる。根底にあるべきなのは<strong>説明できない実装を出さない原則</strong>であり、AIが生成したからといって中身を理解せずに出力をそのまま提出することを許さない文化を作ることが要になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分が最近提出したAI生成コードについて、「これは自分が説明できる実装か」を自問し、説明できない箇所があれば書き出してみる。所要目安: 15分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>心理的安全性</h3>
+      <div class="chips"><span class="chip">AI利用を隠さなくてよい空気</span>
+            <span class="chip">質問しやすさ</span>
+            <span class="chip">失敗の共有</span>
+            <span class="chip">使わない選択の尊重</span></div>
+      <div class="prose"><p>心理的安全性とは、AIの利用や不利用、成功や失敗を率直に口にできる職場の空気のことだ。「AIを使ったのがバレたら評価が下がるかもしれない」という不安があると、実態と乖離した表面的な報告ばかりが上がるようになる。</p>
+            <p>個人がどれだけオープンな性格であっても、組織の空気が閉鎖的であれば率直な発言はできない。<strong>AI利用を隠さなくてよい空気</strong>は、個々人の心がけではなく、マネージャーの振る舞いや評価制度によって作られる組織の性質である。</p>
+            <p>初心者が萎縮せずに<strong>質問しやすさ</strong>を感じられる環境や、うまくいかなかった<strong>失敗の共有</strong>がむしろ歓迎される雰囲気があってこそ、組織全体の学習速度が上がる。同時に、業務特性やこだわりからAIを<strong>使わない選択の尊重</strong>も必要で、使わないことへの同調圧力もまた、心理的安全性を損なう要因になりうる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>チームメンバーに「AIを使っていることを気兼ねなく話せるか」を1人に聞いてみる。所要目安: 15分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>開発様式</h3>
+      <div class="chips"><span class="chip">ペアプロ（2人で協働）への組み込み</span>
+            <span class="chip">モブプロ（複数人で協働）への組み込み</span>
+            <span class="chip">非同期作業との併用</span>
+            <span class="chip">レビュー会の形の変化</span></div>
+      <div class="prose"><p>開発様式とは、AIをどう組み込むかによって、チームの協働の仕方そのものを見直すことを指す。従来の開発プラクティスは人と人の協働を前提に設計されており、AIという新しい参加者が加わることで最適な形が変わる。</p>
+            <p>個人がAIを一人で使いこなすのと、チームの開発プロセスにAIを組み込むのとでは求められる工夫が異なる。<strong>ペアプロ<span class="gl">2人で協働</span>への組み込み</strong>や<strong>モブプロ<span class="gl">複数人で協働</span>への組み込み</strong>では、AIをどのタイミングで誰が操作するかといった役割分担の再定義が必要になり、これはチーム全体の合意形成を要する組織的な取り組みだ。</p>
+            <p>AIによる作業は必ずしも同期的なやり取りを必要としないため、<strong>非同期作業との併用</strong>が現実的な選択肢として増えている。レビューの前提となる作業量や粒度が変わることで、<strong>レビュー会の形の変化</strong>も避けられない。従来の会議体をそのまま続けるのではなく、実態に合わせて更新していく柔軟さが求められる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>次回のペアプロ・モブプロで、AIをどのタイミングで誰が操作するかを事前に1つ決めてみる。所要目安: 15分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>アジャイル運用への統合</h3>
+      <div class="chips"><span class="chip">見積もりの変化</span>
+            <span class="chip">スプリント（短い開発期間）計画</span>
+            <span class="chip">スパイク（調査タスク）の扱い</span>
+            <span class="chip">DoD（完了の定義）への追加項目</span>
+            <span class="chip">割り込み対応</span></div>
+      <div class="prose"><p>アジャイル運用への統合とは、スクラムなどの既存の開発プロセスに、AI活用を前提とした調整を加えることを指す。AIによって一部のタスクの所要時間が劇的に変わるため、これまでの経験則をそのまま使うとプロセス全体が噛み合わなくなる。</p>
+            <p>個々のエンジニアがAIで作業を高速化できても、チームの計画プロセス自体が旧来のままでは、その速さを組織として活かせない。<strong>見積もりの変化</strong>を踏まえて<strong>スプリント<span class="gl">短い開発期間</span>計画</strong>の立て方を見直すことは、チームやプロジェクトマネジメントの組織的な合意を要する。</p>
+            <p>技術調査にあたる<strong>スパイク<span class="gl">調査タスク</span>の扱い</strong>もAIによって様相が変わり、これまで数日かかっていた調査が数時間で終わることもある。生成コードのレビューや検証を織り込んだ<strong>DoD<span class="gl">完了の定義</span>への追加項目</strong>を明文化しないと、「完了」の基準がチームごとにばらつく。AIによって突発的な対応が増減する<strong>割り込み対応</strong>のパターンも変わるため、計画の柔軟性を持たせる工夫が必要になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>直近のスプリントで、AI活用を前提にした見積もりとそうでない見積もりの差がどれくらいあったか振り返ってみる。所要目安: 25分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>育成の再構築</h3>
+      <div class="chips"><span class="chip">ジュニアが失う学習機会の補填</span>
+            <span class="chip">基礎の意図的な訓練</span>
+            <span class="chip">AIなしで書く時間の確保</span>
+            <span class="chip">メンタリング（先輩による指導）の強化</span>
+            <span class="chip">レビューを学習機会にする</span></div>
+      <div class="prose"><p>育成の再構築とは、AIが定型的な実装を肩代わりするようになった結果、若手エンジニアの育て方そのものを見直す必要が生じたことへの対応である。従来、ジュニアは地道な実装作業を通じて基礎力を身につけてきたが、その機会がAIによって奪われつつある。</p>
+            <p>これは個々の若手や指導役の努力不足ではなく、育成の前提となる環境が変わったことによる構造的な課題だ。<strong>ジュニアが失う学習機会の補填</strong>を組織として設計しない限り、AIに頼れる先輩世代と、基礎を積む前にAIに頼ってしまう若手世代の間で実力の断絶が生まれかねない。</p>
+            <p>対策としては<strong>基礎の意図的な訓練</strong>をカリキュラムに組み込み、あえて<strong>AIなしで書く時間の確保</strong>を制度化するチームも出てきている。<strong>メンタリング<span class="gl">先輩による指導</span>の強化</strong>によって、AIでは代替できない設計判断や勘所を人から人へ伝える機会を意図的に作ることも重要だ。生成コードのレビューを単なる品質チェックで終わらせず、<strong>レビューを学習機会にする</strong>ことで、実装を減らしながらも学びの密度を保つ工夫が求められる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分がジュニアの立場だとして、AIなしで今週1つタスクを解いてみて、基礎力がどれだけ身についているか確認してみる。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://zenn.dev/hott3/articles/review-for-learning-in-the-ai-age">【レビュー文化】AI時代だからこそ「学ぶレビュー文化」を大事にしたい（コードレビュー）</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">AI時代のレビュー文化とレビューを学習機会にする考え方がわかる</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/hungryclimber/items/6ec8f643b1409e79a020">コードレビューは本当に必要か？…AIコーディング時代に考える「作法」と「人間の役割」</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">生成コードの責任の所在やレビュアーの役割の変化について考察している</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/umtt/items/6da199eed7d9db865f78">AI時代のアジャイルは「価値観」ではなく「制約」が変わる</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">見積もりやスプリント計画がAIでどう変化するかの実感がわかる</p>
+        </li>
+        <li>
+          <a href="https://zenn.dev/nttdata_tech/articles/65ef5e6515cc8f">初心者向けアジャイル講座～スプリントプランニング～</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">スプリント計画の基本を押さえたうえでAI時代の変化と比較できる</p>
+        </li>
+        <li>
+          <a href="https://smartcodes.jp/education/articles/ai-code-review-psychological-safety/">「指摘」を「対話」に変える。AIコードレビューが開発組織の心理的安全性を高めるパラダイムシフト</a>
+          <span class="domain">smartcodes.jp</span>
+          <p class="desc">レビュー文化と心理的安全性の関係を具体的な事例とともに解説している</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../g5/g5.html">← 5. プラットフォーム提供</a>
+      <a href="../../study-11/g1/g1.html">Layer 11 マインドセット・ヒューマンスキル →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

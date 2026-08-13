@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>インフラ・運用 — エンジニアリング基礎 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../../index.html">← 一覧に戻る</a>
+    <a href="../../ai-skillset.html#L00">チェックリストで見る</a>
+    <span class="strip"><a href="../../study-00/g1/g1.html" class="current">00 基礎</a>
+    <a href="../../study-01/g1/g1.html">01 実務開発力</a>
+    <a href="../../study-02/g1/g1.html">02 プロジェクト遂行</a>
+    <a href="../../study-03/g1/g1.html">03 LLM理解</a>
+    <a href="../../study-04/g1/g1.html">04 プロンプト</a>
+    <a href="../../study-05/g1/g1.html">05 実務</a>
+    <a href="../../study-06/g1/g1.html">06 エージェント</a>
+    <a href="../../study-07/g1/g1.html">07 評価</a>
+    <a href="../../study-08/g1/g1.html">08 セキュリティ</a>
+    <a href="../../study-09/g1/g1.html">09 コスト</a>
+    <a href="../../study-10/g1/g1.html">10 組織</a>
+    <a href="../../study-11/g1/g1.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 00 / エンジニアリング基礎 — 9 of 12</p>
+    <h1>インフラ・運用</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>コンテナ<span class="gl">実行環境ごと固める仕組み</span></h3>
+      <div class="chips"><span class="chip">Dockerfileの記述</span>
+            <span class="chip">レイヤキャッシュ<span class="gl">差分再利用</span></span>
+            <span class="chip">マルチステージビルド<span class="gl">ビルドと実行を分離</span></span>
+            <span class="chip">イメージサイズ削減</span>
+            <span class="chip">Docker Compose<span class="gl">複数コンテナの定義</span></span>
+            <span class="chip">Kubernetes<span class="gl">コンテナの自動運用基盤</span>の基本要素{Pod・Service・Deployment・Ingress}</span>
+            <span class="chip">ヘルスチェック<span class="gl">生死確認</span></span>
+            <span class="chip">リソース制限</span></div>
+      <div class="prose"><p>Dockerfileはコンテナイメージの構築手順を記述するファイルで、レイヤキャッシュによって変更のない部分の再ビルドを省略でき、マルチステージビルドはビルド専用の環境と実行専用の環境を分離してイメージサイズを削減する。Docker Composeは複数コンテナの構成をまとめて定義する仕組み、Kubernetesはコンテナの運用を自動化する基盤でありPod・Service・Deployment・Ingressといった基本要素を組み合わせて構成する。ヘルスチェックでコンテナの生死を確認し、リソース制限でCPUやメモリの使用量に上限を設ける。</p>
+            <p>コンテナ技術は現代のシステムのデプロイ単位そのものであり、開発環境と本番環境の差異をなくし再現性を担保するための基盤知識として避けて通れない。AIが生成したDockerfileが不要なレイヤを積み重ねてイメージを肥大化させていないか、マルチステージビルドを活用できているかは、実務でのコードレビューの定番チェック項目になる。</p>
+            <p>実務での落とし穴は、Dockerfileのレイヤ順序を誤ってキャッシュが効かずビルド時間が伸びることや、リソース制限を設定せずに一つのコンテナが暴走してノード全体に影響を与えることである。Kubernetesの基本要素の役割分担（PodとServiceとDeploymentがそれぞれ何を担うか）を理解していないと、障害発生時にどのレイヤーに問題があるか切り分けられない。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>既存のDockerfileをマルチステージビルドに書き換え、docker imagesでイメージサイズがどれだけ削減されたかを比較する。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>IaC<span class="gl">インフラをコードで管理</span></h3>
+      <div class="chips"><span class="chip">Terraform の plan と apply</span>
+            <span class="chip">state<span class="gl">現状の管理ファイル</span>の扱い</span>
+            <span class="chip">module<span class="gl">再利用単位</span>化</span>
+            <span class="chip">冪等性の確認</span>
+            <span class="chip">ドリフト<span class="gl">手動変更とのズレ</span>検知</span>
+            <span class="chip">環境分離<span class="gl">開発・検証・本番</span></span>
+            <span class="chip">レビュー可能な差分の作り方</span></div>
+      <div class="prose"><p>IaC（Infrastructure as Code）はインフラをコードで管理する手法であり、Terraformではplanで変更内容を確認しapplyで実際に適用する。stateはインフラの現状を記録する管理ファイルであり、moduleは再利用可能な単位として構成をまとめる。冪等性の確認、手動変更によって実際の状態とコードの記述がずれるドリフトの検知、開発・検証・本番といった環境分離、レビュー可能な差分の作り方もIaC運用の重要な実務知識である。</p>
+            <p>インフラをコードで管理することで変更履歴が残り、レビューを経て適用できるようになり、AIにインフラ構成の変更を提案させる場合でもplanの出力を人間が確認するという安全網が機能する。ドリフトの概念を理解していないと、手動で行った緊急対応がコードに反映されずに次のapplyで意図せず元に戻されるといった事故を起こす。</p>
+            <p>実務での落とし穴は、stateファイルの競合や破損によって誰もインフラを変更できなくなることや、環境分離が不十分で検証環境の設定変更が誤って本番に適用されることである。AIが生成したTerraformコードのplan結果を必ず人間が確認してからapplyするというルールを徹底することが、AI活用時代のインフラ変更における最低限の安全策になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>TerraformでS3バケットなど簡単なリソースを1つ定義し、plan→apply→手動で設定変更→再度planでドリフトが検知されることを確認する。所要目安: 1.5時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>クラウド</h3>
+      <div class="chips"><span class="chip">IAM<span class="gl">権限管理</span>とポリシー設計</span>
+            <span class="chip">VPC<span class="gl">仮想ネットワーク</span>・サブネット・セキュリティグループ</span>
+            <span class="chip">NAT Gateway<span class="gl">外向き通信の集約</span>と固定IP</span>
+            <span class="chip">ロードバランサ</span>
+            <span class="chip">マネージドDB</span>
+            <span class="chip">オブジェクトストレージ<span class="gl">S3等のファイル置き場</span></span>
+            <span class="chip">サーバーレス<span class="gl">サーバー管理不要の実行</span></span>
+            <span class="chip">コンテナ実行基盤<span class="gl">ECS・Cloud Run等</span></span>
+            <span class="chip">マルチAZ<span class="gl">複数拠点構成</span>と可用性</span></div>
+      <div class="prose"><p>IAMはクラウド上の権限管理の仕組みでポリシー設計によってアクセス制御を行い、VPCは仮想的なネットワーク、サブネットやセキュリティグループでその内部をさらに区切る。NAT Gatewayは内部から外部への通信を集約し固定IPを持たせる仕組み、ロードバランサは負荷分散、マネージドDBはクラウド事業者が運用を代行するデータベース、オブジェクトストレージはS3のようなファイル置き場であり、サーバーレスはサーバー管理不要で実行できる仕組み、コンテナ実行基盤はECSやCloud Runのようなマネージドなコンテナ実行環境、マルチAZは複数の物理拠点にまたがる構成で可用性を高める仕組みである。</p>
+            <p>クラウドサービスの構成要素とその組み合わせ方を理解していないと、コストと可用性と保守性のバランスが取れたインフラ設計ができない。AIがクラウド構成をコード化して提案する場面が増える中、IAMポリシーが必要以上に強い権限を与えていないか、セキュリティグループが不要にポートを開けていないかを見抜く力は、クラウドセキュリティ事故を防ぐ最後の砦となる。</p>
+            <p>実務でのよくある事故は、IAMポリシーの権限が広すぎることによる意図しないリソースへのアクセスや、マルチAZ構成にしていなかったために一つのデータセンター障害でサービス全体が停止することである。サーバーレスとコンテナ実行基盤はどちらも運用負荷を下げる選択肢だが、コールドスタートの遅延や実行時間制限といった特性の違いを理解して使い分ける必要がある。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>最小権限のIAMポリシーを1つ設計し、必要以上の権限(ワイルドカード権限など)を与えていないかをポリシーシミュレータや手動レビューで検証する。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>可観測性<span class="gl">内部状態を外から把握できること</span></h3>
+      <div class="chips"><span class="chip">構造化ログ<span class="gl">機械で読める形式のログ</span></span>
+            <span class="chip">ログレベル設計</span>
+            <span class="chip">メトリクス<span class="gl">数値指標</span></span>
+            <span class="chip">REDメソッド<span class="gl">流量・エラー・遅延</span></span>
+            <span class="chip">USEメソッド<span class="gl">使用率・飽和・エラー</span></span>
+            <span class="chip">分散トレーシング</span>
+            <span class="chip">ダッシュボード設計</span>
+            <span class="chip">アラート設計<span class="gl">鳴らしすぎない</span></span>
+            <span class="chip">SLI<span class="gl">測定指標</span>・SLO{目標水準}・エラーバジェット{許容失敗量}</span></div>
+      <div class="prose"><p>構造化ログは機械可読な形式でログを出力する手法であり、ログレベルの設計、数値指標であるメトリクス、流量・エラー率・遅延を見るREDメソッド、使用率・飽和・エラーを見るUSEメソッド、処理を横断して追跡する分散トレーシング、それらをまとめて可視化するダッシュボード設計、鳴らしすぎないアラート設計、そして測定指標であるSLI・目標水準であるSLO・許容できる失敗量であるエラーバジェットという運用目標の枠組みが可観測性の主要な構成要素である。</p>
+            <p>可観測性はシステムの内部状態を外から把握できることを指し、障害の予兆を捉え、発生時には迅速に原因を特定するための必須基盤である。AIが生成した監視設定やアラートルールが本当に意味のある異常を検知できるものか、あるいは鳴りすぎて無視されるノイズになっていないかを判断するには、REDメソッドやUSEメソッドといった体系的な観点が必要になる。</p>
+            <p>実務での落とし穴は、アラートを大量に設定しすぎてオンコール担当者が全てを無視するようになるアラート疲れであり、逆に重要な異常を検知できないアラート設計になっていることもある。SLI・SLOに基づいてエラーバジェットを運用することで、機能開発の速度と信頼性のバランスをデータに基づいて判断できるようになり、これは組織的な意思決定の土台にもなる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分のアプリに構造化ログとREDメソッド(流量・エラー率・遅延)のメトリクスを1つずつ仕込み、簡単なダッシュボードで可視化する。所要目安: 1.5時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>運用</h3>
+      <div class="chips"><span class="chip">オンコール<span class="gl">待機当番</span>体制</span>
+            <span class="chip">インシデントコマンダー<span class="gl">障害対応の指揮役</span></span>
+            <span class="chip">タイムライン記録</span>
+            <span class="chip">エスカレーション<span class="gl">上位への引き継ぎ</span>基準</span>
+            <span class="chip">ポストモーテム<span class="gl">非難なしの振り返り</span></span>
+            <span class="chip">再発防止アクションの管理</span>
+            <span class="chip">Runbook<span class="gl">手順書</span>整備</span>
+            <span class="chip">キャパシティプランニング<span class="gl">必要資源の見積もり</span></span></div>
+      <div class="prose"><p>オンコールは障害対応のための待機当番体制であり、障害発生時には対応を指揮するインシデントコマンダーを立て、タイムラインを記録しながら対応を進める。エスカレーション基準は上位の担当者へ引き継ぐタイミングを定め、ポストモーテムは非難を伴わない振り返りとして再発防止アクションを管理し、Runbookは対応手順書として整備され、キャパシティプランニングは必要な資源をあらかじめ見積もる活動である。</p>
+            <p>運用は開発と切り離せない一連のプロセスであり、障害対応の型を持っているチームは同じ障害を繰り返さず学習していけるが、型がないチームは同じ火事を何度も消し続けることになる。AIが障害対応を支援するツールとして使われる場面が増えているが、最終的な判断と指揮を担うのは人間であり、ポストモーテムで得た教訓を組織の知識として蓄積する仕組みが不可欠である。</p>
+            <p>実務での落とし穴は、ポストモーテムが個人の非難につながり本音の振り返りができなくなることや、Runbookが更新されずに実際の構成と乖離していることである。キャパシティプランニングを怠ると、成長期のサービスで突然のトラフィック増加に耐えられずに障害を起こすため、平常時からの継続的な見積もりが欠かせない。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>過去に起きた小さな不具合を1つ選んで非難なしのポストモーテムを実際に書き、再発防止アクションをRunbook形式に落とし込む。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://matsuand.github.io/docs.docker.jp.onthefly/develop/develop-images/multistage-build/">マルチステージビルドの利用｜Docker ドキュメント</a>
+          <span class="domain">matsuand.github.io</span>
+          <p class="desc">マルチステージビルドでイメージサイズを削減する具体的な書き方がわかる</p>
+        </li>
+        <li>
+          <a href="https://matsuand.github.io/docs.docker.jp.onthefly/get-started/kube-deploy/">Kubernetes へのデプロイ｜Docker ドキュメント</a>
+          <span class="domain">matsuand.github.io</span>
+          <p class="desc">Pod・Service・Deploymentの関係を実際のデプロイ手順で学べる</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/SoarTec-lab/items/992b9ddfe7838932c3b1">システムのスピードと品質を両立する為のエラーバジェットとSLI/SLOという考え方</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">SLI・SLO・エラーバジェットの関係を実務目線で理解できる</p>
+        </li>
+        <li>
+          <a href="https://techblog.lycorp.co.jp/ja/20250422a">信頼性向上のためのSLI/SLO導入vol.1 - 紹介と必要性</a>
+          <span class="domain">techblog.lycorp.co.jp</span>
+          <p class="desc">組織にSLI/SLOを導入する際の考え方を事例ベースで学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../g8/g8.html">← 8. 開発プロセス</a>
+      <a href="../g10/g10.html">10. セキュリティ基礎 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

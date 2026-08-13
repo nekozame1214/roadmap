@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>設計 — エージェント設計・オーケストレーション — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../../index.html">← 一覧に戻る</a>
+    <a href="../../ai-skillset.html#L06">チェックリストで見る</a>
+    <span class="strip">
+<a href="../../study-00/g1/g1.html">00 基礎</a>
+<a href="../../study-01/g1/g1.html">01 実務開発力</a>
+<a href="../../study-02/g1/g1.html">02 プロジェクト遂行</a>
+<a href="../../study-03/g1/g1.html">03 LLM理解</a>
+<a href="../../study-04/g1/g1.html">04 プロンプト</a>
+<a href="../../study-05/g1/g1.html">05 実務</a>
+<a href="../../study-06/g1/g1.html" class="current">06 エージェント</a>
+<a href="../../study-07/g1/g1.html">07 評価</a>
+<a href="../../study-08/g1/g1.html">08 セキュリティ</a>
+<a href="../../study-09/g1/g1.html">09 コスト</a>
+<a href="../../study-10/g1/g1.html">10 組織</a>
+<a href="../../study-11/g1/g1.html">11 マインド</a>
+    </span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 06 / エージェント設計・オーケストレーション — 1 of 2</p>
+    <h1>設計</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>エージェントループ</h3>
+      <div class="chips"><span class="chip">Plan<span class="gl">計画</span>→Execute<span class="gl">実行</span>→Verify<span class="gl">検証</span>の循環</span>
+            <span class="chip">停止条件の定義</span>
+            <span class="chip">ループ回数の上限</span>
+            <span class="chip">進捗の可視化</span>
+            <span class="chip">計画の再作成タイミング</span>
+            <span class="chip">無限ループの検知</span></div>
+      <div class="prose"><p>エージェントループとは、AIが「計画を立てる→実行する→結果を検証する」というPlan→Execute→Verifyのサイクルを、目的が達成されるか停止条件に達するまで繰り返す基本動作のこと。単発の応答生成とは異なり、自分の出力を評価し次の一手を選び直す点が特徴になる。</p>
+            <p>このループを設計せずに使うと、エージェントはタスクが終わったかどうかを自分で判断できず、意味のない操作を延々と繰り返したり、逆に不十分な状態で処理を打ち切ったりする。安全に自走させるには、いつ止まるべきかという停止条件の定義と、ループ回数の上限をあらかじめ決めておくことが前提になる。</p>
+            <p>実務では進捗の可視化(今どのステップにいるかを人間が追えるログ)を用意し、状況が大きく変わったら計画の再作成タイミングを設けて計画を練り直させる。よくある落とし穴は無限ループの検知を怠ることで、同じ修正を繰り返すだけで前進しないパターンを早期に検出し、人に処理を渡す仕組みが要る。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>簡単なタスク(例:「与えられた四則演算の式を解く」)を題材に、Plan→Execute→Verifyを明示的に繰り返す小さなスクリプトやプロンプトを組んでみる。停止条件とループ回数の上限を必ずコードやプロンプトに明記し、あえて上限に達するケースを1つ作って挙動を確認する。所要時間の目安: 1〜2時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>ワークフローとの使い分け</h3>
+      <div class="chips"><span class="chip">手順が確定→ワークフロー<span class="gl">決められた流れ</span></span>
+            <span class="chip">探索が必要→エージェント</span>
+            <span class="chip">ハイブリッド構成</span>
+            <span class="chip">判断ポイントだけAIに任せる</span>
+            <span class="chip">決定的処理はコードで書く</span></div>
+      <div class="prose"><p>すべてのタスクをエージェントに任せる必要はない。手順があらかじめ確定しているならワークフロー(決められた流れ通りに実行する仕組み)で十分であり、探索が必要な場合にだけエージェントの自律性が価値を持つ。</p>
+            <p>エージェントは柔軟な反面、コストと不確実性が高い。手順が固定的なタスクにまでエージェントを使うと、遅く、高く、再現性の低い処理になってしまう。使い分けの判断基準を持つことは、AIを組織に導入する上でコストと信頼性を両立させる要になる。</p>
+            <p>実務ではハイブリッド構成が現実的な落としどころになることが多い。決定的処理はコードで書くことで確実に処理し、判断ポイントだけAIに任せることで、全体として安定しつつ柔軟性も確保できる。「とりあえずエージェント化」は典型的な失敗パターンなので注意したい。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>直近で自分がAIに任せたタスクを1つ選び、「手順は固定か、探索が必要か」を判定してみる。もしワークフローで十分だった場合は、決定的処理をコードに落とし判断ポイントだけAIに任せるハイブリッド構成に書き直せないか設計案を書き出す。所要時間の目安: 30分〜1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>ツール設計</h3>
+      <div class="chips"><span class="chip">粒度<span class="gl">細かすぎ・粗すぎ</span>の調整</span>
+            <span class="chip">説明文の書き方</span>
+            <span class="chip">引数のバリデーション<span class="gl">入力検証</span></span>
+            <span class="chip">エラーメッセージで復帰を助ける</span>
+            <span class="chip">副作用の明示</span>
+            <span class="chip">dry-run<span class="gl">実行せず結果だけ確認</span>の用意</span>
+            <span class="chip">返り値の情報量</span></div>
+      <div class="prose"><p>ツール設計とは、エージェントがLLMから呼び出せる関数(検索、ファイル操作、API呼び出しなど)をどう定義するかという設計領域。ツールの粒度が細かすぎるとエージェントは組み合わせに迷い、粗すぎると柔軟性を失う。粒度の調整はツール設計の出発点になる。</p>
+            <p>エージェントの挙動の質は、ツールの説明文の書き方に強く左右される。曖昧な説明はモデルに誤ったツールを選ばせ、引数のバリデーションが甘いと不正な呼び出しがそのまま実行されてしまう。ツール設計はプロンプト設計と並ぶ、エージェント品質の土台になる。</p>
+            <p>良いツールはエラーメッセージで復帰を助ける設計になっている(何が悪かったか、次に何を試すべきかを伝える)。副作用の明示(ファイルを書き換える、外部に通信するなど)も欠かせない。破壊的な操作にはdry-runの用意をしておくとエージェントも人間も安心して試行できる。返り値の情報量も重要で、少なすぎればエージェントは状況を誤認し、多すぎればコンテキストを圧迫する。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分が使っている(または作った)ツール定義を1つ選び、説明文をエージェント視点で読み直して曖昧な箇所を書き直す。引数のバリデーションとエラーメッセージを追加・改善し、可能なら破壊的操作にdry-runモードを実装してみる。所要時間の目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>構成</h3>
+      <div class="chips"><span class="chip">サブエージェント<span class="gl">下請けの担当AI</span>への委譲</span>
+            <span class="chip">役割分割<span class="gl">調査・実装・レビュー</span></span>
+            <span class="chip">コンテキストの分離</span>
+            <span class="chip">結果の集約方法</span>
+            <span class="chip">並列実行と競合回避</span>
+            <span class="chip">オーケストレーター<span class="gl">全体を統括する役</span></span></div>
+      <div class="prose"><p>単一のエージェントに全工程を担わせるのではなく、サブエージェントへの委譲によってタスクを分割する構成のこと。調査・実装・レビューのように役割分割することで、それぞれが集中したコンテキストで動けるようになる。</p>
+            <p>一つのエージェントに情報を詰め込みすぎるとコンテキストが肥大化し、判断の精度が落ちる。コンテキストの分離によって各サブエージェントが必要な情報だけを見られるようにすることは、複雑なタスクを安全に自走させる上での基本設計になる。</p>
+            <p>全体を統括するオーケストレーターが各サブエージェントに仕事を振り、結果の集約方法をあらかじめ決めておく必要がある。並列実行と競合回避(同じファイルを複数のエージェントが同時に書き換えるなど)も設計しないと、思わぬ形で成果物が壊れることがある。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>1つのタスクを「調査」「実装」「レビュー」の3役に分割し、それぞれ独立したコンテキストのサブエージェントに任せてみる(Claude Codeのサブエージェント機能などを利用)。結果をどう集約したかを短くメモに残す。所要時間の目安: 1〜2時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>協調パターン</h3>
+      <div class="chips"><span class="chip">パイプライン型<span class="gl">順に処理を渡す</span></span>
+            <span class="chip">並列分担型</span>
+            <span class="chip">監督者型<span class="gl">統括役が指示</span></span>
+            <span class="chip">投票・合議型</span>
+            <span class="chip">競争的生成<span class="gl">複数案から選ぶ</span></span></div>
+      <div class="prose"><p>複数エージェントがどう協調するかにはいくつかの型がある。パイプライン型は前段の出力を次段が受け取って順に処理を渡していく形、並列分担型はタスクを分けて同時に進める形を指す。</p>
+            <p>タスクの性質によって最適な協調パターンは異なる。順序に依存する作業はパイプライン型が向き、独立したサブタスクの束は並列分担型が向く。判断が難しい作業では監督者型で統括役が指示を出す構成の方が制御しやすい。</p>
+            <p>品質を上げたい場面では投票・合議型(複数のエージェントの判断を突き合わせる)や競争的生成(複数案を作らせて良いものを選ぶ)が有効だが、いずれもコストが数倍に膨らむ。効果とコストを見比べて採用するパターンを選ぶのが実務の勘所になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>同じ小タスク(例: 短い文章の要約)を、パイプライン型(下書き→推敲を別エージェントに渡す)と並列分担型(複数案を同時生成)の2パターンで実行し、品質・時間・コストの違いを比較して表にまとめる。所要時間の目安: 1〜2時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>エージェント間通信</h3>
+      <div class="chips"><span class="chip">共有メモリ方式</span>
+            <span class="chip">メッセージパッシング方式</span>
+            <span class="chip">プロトコルの標準化状況</span>
+            <span class="chip">通信失敗時のフォールバック</span>
+            <span class="chip">過剰な通信量の抑制</span></div>
+      <div class="prose"><p>複数のエージェントが情報をやり取りする方式には、共通の記憶領域を介す共有メモリ方式と、メッセージを直接やり取りするメッセージパッシング方式がある。</p>
+            <p>エージェント同士の連携が増えるほど、通信の設計が全体の信頼性を左右する。プロトコルの標準化状況はまだ発展途上の領域であり、ベンダーやフレームワークごとに前提が異なる点には注意が必要になる。</p>
+            <p>通信失敗時のフォールバック(相手からの応答がない場合にどう振る舞うか)を決めておかないと、システム全体が固まってしまう。またエージェント同士が過剰にやり取りを重ねる、過剰な通信量の抑制も設計上の課題で、コストと遅延に直結する。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>2つのエージェント(または擬似的なプロセス)間で、共有ファイル経由の共有メモリ方式と、直接メッセージを渡すメッセージパッシング方式を両方試作する。相手からの応答がない場合のフォールバック処理を1つ実装してみる。所要時間の目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>コスト対効果の設計判断</h3>
+      <div class="chips"><span class="chip">自律度を上げるほど増えるコスト</span>
+            <span class="chip">人手介入との損益分岐の見極め</span>
+            <span class="chip">小さく始めて範囲を広げる</span>
+            <span class="chip">過剰な自動化を避ける判断基準</span></div>
+      <div class="prose"><p>エージェントの自律度をどこまで上げるかは、機能面だけでなくコスト対効果で判断すべき経営的な意思決定でもある。自律度を上げるほど増えるコスト(トークン消費、実行時間、失敗時の手戻り)は無視できない。</p>
+            <p>AIを組織に導入する立場では、人手介入との損益分岐の見極めが求められる。人が確認した方が速く安いタスクにまで過剰な自動化を持ち込むと、かえって生産性を落としてしまう。</p>
+            <p>定石は小さく始めて範囲を広げること。限定的なタスクでエージェントの信頼性とコストを実測してから、段階的に自律度と対象範囲を広げていくのが手堅い進め方になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>直近でエージェントに任せたタスクを1つ選び、トークン消費・実行時間からおおよそのコストを概算し、自分が手作業でやった場合の時間コストと比較して損益分岐点を計算してみる。所要時間の目安: 30分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://www.anthropic.com/engineering/building-effective-agents">Building Effective AI Agents</a>
+          <span class="domain">anthropic.com</span>
+          <p class="desc">ワークフローとエージェントの違い、いつどちらを使うべきかをAnthropicが解説する基礎文献。</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/ABC-KeisukeKashio/items/687c347279765b735964">サブエージェントとは何か？マルチエージェントの設計パターンと主要フレームワークまとめ</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">サブエージェントへの委譲やオーケストレーター構成の実践的な設計パターンを解説。</p>
+        </li>
+        <li>
+          <a href="https://www.promptingguide.ai/agents/function-calling">Function Calling in AI Agents</a>
+          <span class="domain">promptingguide.ai</span>
+          <p class="desc">ツール(関数)設計と呼び出しの基本パターンを整理したガイド。</p>
+        </li>
+        <li>
+          <a href="https://fast.io/resources/multi-agent-orchestration-patterns/">Multi-Agent Orchestration Patterns: Complete Guide</a>
+          <span class="domain">fast.io</span>
+          <p class="desc">パイプライン型・監督者型・投票型など協調パターンの選び方を整理。</p>
+        </li>
+        <li>
+          <a href="https://qiita.com/kai_kou/items/decab9889e9cafdaf8ab">A2Aプロトコル入門 — AIエージェント間通信の標準をPythonで実装する</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">エージェント間通信プロトコルA2Aの仕組みと実装例を紹介。</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../../index.html">← 一覧に戻る</a>
+      <a href="../g2/g2.html">次のグループ: 制御と安全 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>リポジトリのAI可読性 — AIコーディング実務 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../../index.html">← 一覧に戻る</a>
+    <a href="../../ai-skillset.html#L05">チェックリストで見る</a>
+    <span class="strip">
+      <a href="../../study-00/g1/g1.html">00 基礎</a>
+      <a href="../../study-01/g1/g1.html">01 実務開発力</a>
+      <a href="../../study-02/g1/g1.html">02 プロジェクト遂行</a>
+      <a href="../../study-03/g1/g1.html">03 LLM理解</a>
+      <a href="../../study-04/g1/g1.html">04 プロンプト</a>
+      <a href="../../study-05/g1/g1.html" class="current">05 実務</a>
+      <a href="../../study-06/g1/g1.html">06 エージェント</a>
+      <a href="../../study-07/g1/g1.html">07 評価</a>
+      <a href="../../study-08/g1/g1.html">08 セキュリティ</a>
+      <a href="../../study-09/g1/g1.html">09 コスト</a>
+      <a href="../../study-10/g1/g1.html">10 組織</a>
+      <a href="../../study-11/g1/g1.html">11 マインド</a>
+    </span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 05 / AIコーディング実務 — 3 of 4</p>
+    <h1>リポジトリのAI可読性</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>指示ファイル</h3>
+      <div class="chips"><span class="chip">CLAUDE.md / AGENTS.md<span class="gl">AIへの常設指示書</span>の構成</span>
+            <span class="chip">概要・コマンド・規約・禁止事項の4区分</span>
+            <span class="chip">ディレクトリ単位での階層配置</span>
+            <span class="chip">肥大化を防ぐ</span>
+            <span class="chip">定期的な更新運用</span>
+            <span class="chip">チームでのレビュー</span></div>
+      <div class="prose"><p>指示ファイルとは、AIコーディングツールに毎回説明しなくても済むように、プロジェクトの前提をリポジトリ内に書いておく仕組みである。代表例がCLAUDE.md / AGENTS.md<span class="gl">AIへの常設指示書</span>の構成で、AIがセッション開始時に自動的に読み込む常設のコンテキストとなる。</p>
+            <p>毎回のプロンプトで同じ説明を繰り返すのは非効率であるだけでなく、説明漏れによる出力のばらつきの原因にもなる。指示ファイルを整備しておけば、誰がどのセッションでAIを使っても一定水準の前提知識を共有でき、チーム全体のAI活用の底上げにつながる。</p>
+            <p>書き方の型としては概要・コマンド・規約・禁止事項の4区分に整理すると過不足なく書きやすい。モノレポなどではディレクトリ単位での階層配置を行い、サブディレクトリごとの固有ルールを近い場所に置く。運用上の注意点として肥大化を防ぐことが重要で、何でも書き込むとAIが重要な指示を読み飛ばしやすくなる。定期的な更新運用とチームでのレビューを組み込み、実態とずれた古い指示が残り続けないようにする。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>担当リポジトリにCLAUDE.mdまたはAGENTS.mdが無ければ新規作成し、あれば「概要・コマンド・規約・禁止事項」の4区分がすべて埋まっているか点検する。実際にAIツールの新しいセッションを開始し、指示ファイルの内容だけでビルド・テストコマンドを正しく実行できるか検証する。所要目安60分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>ドキュメント</h3>
+      <div class="chips"><span class="chip">README<span class="gl">導入手順書</span>にセットアップ・実行・テストを記載</span>
+            <span class="chip">ADR<span class="gl">意思決定の記録</span></span>
+            <span class="chip">ディレクトリ構成の説明</span>
+            <span class="chip">用語集</span>
+            <span class="chip">アーキテクチャ図</span>
+            <span class="chip">よくある落とし穴の記載</span></div>
+      <div class="prose"><p>ここで言うドキュメントとは、AIが読んでプロジェクトの背景を理解するための資料一式を指す。基本となるのはREADME<span class="gl">導入手順書</span>にセットアップ・実行・テストを記載することで、これがなければAI自身が動作確認すらできない。</p>
+            <p>人間の新人エンジニアがオンボーディングでドキュメントを読むのと同様に、AIも良質なドキュメントがあるほど的確な提案ができる。逆にドキュメントが乏しいリポジトリでは、AIは推測に頼らざるを得ず、既存の意図を無視した提案をしがちになる。</p>
+            <p>ADR<span class="gl">意思決定の記録</span>を残しておくと、「なぜこの設計にしたか」という経緯をAIが踏まえて提案できるようになり、過去に却下された案を再提案されるような無駄を防げる。ディレクトリ構成の説明や用語集は、プロジェクト固有の呼び方をAIに正しく理解させるために有効だ。アーキテクチャ図があれば、大きな構造変更を依頼する際にAIが全体像を踏まえた提案をしやすくなる。よくある落とし穴の記載を残しておくことも、同じ失敗をAIに繰り返させないための実践的な工夫である。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>担当プロダクトのREADMEにセットアップ・実行・テストの手順が揃っているか確認し、欠けている箇所を補う。加えて直近で悩んで決めた設計判断を1つ選び、背景・選択肢・決定理由を1ページのADRとして書き起こす。所要目安60分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>コード側の整備</h3>
+      <div class="chips"><span class="chip">型定義の充実</span>
+            <span class="chip">命名の一貫性</span>
+            <span class="chip">責務の分離</span>
+            <span class="chip">自動テストの整備</span>
+            <span class="chip">デッドコード<span class="gl">使われていないコード</span>の削除</span>
+            <span class="chip">サンプル実装の設置</span></div>
+      <div class="prose"><p>コード側の整備とは、ドキュメントを書く代わりに、コードそのものをAIにとって読み取りやすい状態に保つアプローチである。中心となるのは型定義の充実で、型があれば関数の入出力の意図をAIが文章の説明なしに把握できる。</p>
+            <p>ドキュメントは書いた瞬間から陳腐化が始まるが、コードは常に最新の実態を表している。だからこそ、コード自体の読みやすさを高めることは、ドキュメント整備よりも持続性の高いAI可読性の投資といえる。良いコードは人間にとってもAIにとっても読みやすいという点は変わらない。</p>
+            <p>命名の一貫性が保たれていれば、AIは類似の名前から意図を推測しやすくなる。責務の分離が徹底されたコードベースでは、AIに変更を依頼したときの影響範囲が予測しやすい。自動テストの整備は、AIが変更後に自分の出力を検証する手段そのものになる。デッドコード<span class="gl">使われていないコード</span>の削除を怠ると、AIが誤って参照してしまうことがあるため、定期的な掃除が必要だ。サンプル実装の設置、つまり典型的なパターンの実装例を置いておくと、AIはそれを模倣して既存の流儀に沿ったコードを書きやすくなる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>型が緩い(any型や暗黙のobject型が使われている)関数を1つ選び、型定義を充実させてからAIに機能追加を依頼し、型定義前と後で提案の的確さが変わるか比較する。あわせて未使用のデッドコードをAIに検出させ、削除して問題ないか確認した上で除去する。所要目安60分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>開発環境</h3>
+      <div class="chips"><span class="chip">ワンコマンドセットアップ</span>
+            <span class="chip">lint・format・testのコマンド統一</span>
+            <span class="chip">devcontainer<span class="gl">定義済み開発環境</span></span>
+            <span class="chip">依存バージョンの固定</span>
+            <span class="chip">AIが実行してよいコマンドの明示</span></div>
+      <div class="prose"><p>開発環境の整備とは、AIが自律的にコードを実行・検証できる土台を整えることを指す。理想はワンコマンドセットアップで、環境構築の手順が複雑だと、AIエージェントも人間の新人と同じようにつまずく。</p>
+            <p>AIエージェントが自分でコードを書いて実行し、結果を見て修正するというサイクルを回すには、実行環境そのものが安定して再現可能である必要がある。環境構築でつまずくエージェントは、本来のコーディング能力を発揮する前に力尽きてしまう。</p>
+            <p>lint・format・testのコマンド統一を行っておけば、AIは迷わず正しいコマンドで検証でき、コマンド名を推測させる無駄がなくなる。devcontainer<span class="gl">定義済み開発環境</span>を用意すれば、ローカル環境の差異に左右されずに一貫した挙動を得られる。依存バージョンの固定も同様に重要で、バージョン差異による予期しないエラーを防ぐ。忘れられがちだが実務上重要なのがAIが実行してよいコマンドの明示で、破壊的な操作を誤って実行させないための安全策として機能する。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>担当リポジトリのセットアップ手順を実際に1コマンドで完結できるか(できなければ何ステップかかるか)を数え、npmスクリプトやMakefileにまとめられないか検討する。lint・format・testの起動コマンド名をCLAUDE.md/AGENTS.mdに明記し、AIに実行させて意図通り動くか確認する。所要目安45分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://qiita.com/dai_chi/items/61019c602c2c40dade07">AGENTS.mdベストプラクティス完全ガイド - AIエージェントを最大限活用する設定術</a>
+          <span class="domain">qiita.com</span>
+          <p class="desc">AGENTS.mdの構成・書き方のベストプラクティスが体系的に学べる</p>
+        </li>
+        <li>
+          <a href="https://izanami.dev/post/47b08b5a-6e1c-4fb0-8342-06b8e627450a">CLAUDE.md や AGENTS.md のベストプラクティスな書き方</a>
+          <span class="domain">izanami.dev</span>
+          <p class="desc">指示ファイルの肥大化を防ぐ書き方や運用の勘所が学べる</p>
+        </li>
+        <li>
+          <a href="https://www.issoh.co.jp/tech/details/9198/">ADR（アーキテクチャ決定記録）とは｜書き方・テンプレート・design docとの違い</a>
+          <span class="domain">issoh.co.jp</span>
+          <p class="desc">ADRの書き方とテンプレート、design docとの違いが学べる</p>
+        </li>
+        <li>
+          <a href="https://zenn.dev/maman/articles/f91a52bc06024d">ADR（Architecture Decision Record）、始めました。</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">チームでADR運用を始めた実践的な事例が学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../g2/g2.html">← 検証</a>
+      <a href="../g4/g4.html">ツール運用 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

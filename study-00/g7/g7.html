@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>設計・アーキテクチャ — エンジニアリング基礎 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../../index.html">← 一覧に戻る</a>
+    <a href="../../ai-skillset.html#L00">チェックリストで見る</a>
+    <span class="strip"><a href="../../study-00/g1/g1.html" class="current">00 基礎</a>
+    <a href="../../study-01/g1/g1.html">01 実務開発力</a>
+    <a href="../../study-02/g1/g1.html">02 プロジェクト遂行</a>
+    <a href="../../study-03/g1/g1.html">03 LLM理解</a>
+    <a href="../../study-04/g1/g1.html">04 プロンプト</a>
+    <a href="../../study-05/g1/g1.html">05 実務</a>
+    <a href="../../study-06/g1/g1.html">06 エージェント</a>
+    <a href="../../study-07/g1/g1.html">07 評価</a>
+    <a href="../../study-08/g1/g1.html">08 セキュリティ</a>
+    <a href="../../study-09/g1/g1.html">09 コスト</a>
+    <a href="../../study-10/g1/g1.html">10 組織</a>
+    <a href="../../study-11/g1/g1.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 00 / エンジニアリング基礎 — 7 of 12</p>
+    <h1>設計・アーキテクチャ</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>設計原則</h3>
+      <div class="chips"><span class="chip">単一責任の原則</span>
+            <span class="chip">オープン・クローズドの原則</span>
+            <span class="chip">リスコフの置換原則</span>
+            <span class="chip">インターフェース分離の原則</span>
+            <span class="chip">依存性逆転の原則</span>
+            <span class="chip">DRY<span class="gl">同じことを繰り返さない</span></span>
+            <span class="chip">YAGNI<span class="gl">今要らないものは作らない</span></span>
+            <span class="chip">KISS<span class="gl">単純に保つ</span></span>
+            <span class="chip">凝集度<span class="gl">まとまりの強さ</span>と結合度{依存の強さ}</span></div>
+      <div class="prose"><p>単一責任の原則は1つのクラスが1つの責任だけを持つべきという原則、オープン・クローズドの原則は拡張には開いていて修正には閉じているべきという原則、リスコフの置換原則は派生クラスが基底クラスと置換可能であるべきという原則、インターフェース分離の原則は使わないメソッドへの依存を強制すべきでないという原則、依存性逆転の原則は上位モジュールが下位モジュールの詳細に依存すべきでないという原則であり、これらはSOLID原則と総称される。DRYは同じことを繰り返さない、YAGNIは今要らないものは作らない、KISSは単純に保つという実務的な指針であり、凝集度と結合度はモジュール内部のまとまりの強さと、モジュール間の依存の強さを表す。</p>
+            <p>これらの原則は「読みやすく変更しやすいコード」を判断するための共通言語であり、コードレビューで「なぜこの設計が良くないのか」を具体的に説明する語彙を与えてくれる。AIが生成したコードが単一責任の原則を破って何でもやるクラスになっていないか、YAGNIに反して不要な抽象化を先回りして作っていないかを判断する力は、AI生成コードのレビューにおいて最も頻繁に使う視点である。</p>
+            <p>実務での落とし穴は、原則を教条的に適用しすぎて過剰な抽象化を生むことであり、YAGNIとオープン・クローズドの原則はしばしば緊張関係にある。「今のところ変更されない部分に依存性逆転を適用して複雑にする」といった過剰設計は、AIが提案しがちな「綺麗だが過剰な」設計にも表れやすく、シンプルさとのバランス感覚が実務力として問われる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分やAIが書いた「何でもやるクラス」を1つ選び、単一責任の原則に沿ってメソッドを別クラスへ分割するリファクタリングを行う。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>デザインパターン<span class="gl">再利用可能な設計の型</span></h3>
+      <div class="chips"><span class="chip">ファクトリ<span class="gl">生成を任せる</span></span>
+            <span class="chip">ストラテジ<span class="gl">振る舞いを差し替える</span></span>
+            <span class="chip">アダプタ<span class="gl">インターフェースを変換</span></span>
+            <span class="chip">デコレータ<span class="gl">機能を包んで追加</span></span>
+            <span class="chip">オブザーバ<span class="gl">変化を通知</span></span>
+            <span class="chip">リポジトリ<span class="gl">永続化を隠す</span></span>
+            <span class="chip">DI<span class="gl">依存を外から注入</span>とDIコンテナ</span>
+            <span class="chip">過剰適用のアンチパターン<span class="gl">避けるべき型</span></span></div>
+      <div class="prose"><p>ファクトリはオブジェクトの生成をカプセル化するパターン、ストラテジは振る舞いを実行時に差し替えられるようにするパターン、アダプタは異なるインターフェースを変換して接続するパターン、デコレータは既存のオブジェクトを包んで機能を追加するパターン、オブザーバは状態変化を購読者に通知するパターン、リポジトリはデータの永続化方法をドメインロジックから隠すパターンである。DIは依存を外部から注入する仕組み、DIコンテナはその注入を自動化する仕組みであり、これらのパターンを状況に合わず無理に当てはめる過剰適用はアンチパターンとして知られる。</p>
+            <p>デザインパターンは先人が繰り返し遭遇した設計課題への定番の解決策であり、名前を共有することでチーム内の設計議論を短時間で済ませられる実務上のメリットが大きい。AIが生成したコードに「なぜここでストラテジパターンが使われているのか」「これは過剰なファクトリの適用ではないか」を判断できる力は、AIが時にパターンを教科書的に当てはめすぎる傾向があるだけに重要になる。</p>
+            <p>落とし穴は、パターン自体が目的化して単純な条件分岐で済む処理に大掛かりなストラテジパターンを導入してしまうことである。DIコンテナは依存関係をテスト容易にする強力な仕組みだが、過度に使うと初期化の流れが追いにくくなり、AIが生成したコードのDI設定が本当に必要な複雑さなのかを見極める判断力が求められる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>条件分岐だらけの処理を1つ選んでストラテジパターンで書き換え、導入前後でテストの書きやすさがどう変わるか比較する。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>アーキテクチャ<span class="gl">全体構造</span></h3>
+      <div class="chips"><span class="chip">レイヤードアーキテクチャ<span class="gl">層に分ける</span></span>
+            <span class="chip">クリーンアーキテクチャ<span class="gl">依存を内向きに固定</span></span>
+            <span class="chip">ヘキサゴナル<span class="gl">中心と外側を分離</span></span>
+            <span class="chip">MVC<span class="gl">表示・制御・データの分離</span></span>
+            <span class="chip">モノリス<span class="gl">一体型</span>とマイクロサービス{分割型}</span>
+            <span class="chip">モジュラモノリス<span class="gl">一体型だが内部を分割</span></span>
+            <span class="chip">依存方向の管理と循環依存の排除</span></div>
+      <div class="prose"><p>レイヤードアーキテクチャは責務ごとに層を分ける古典的な構造、クリーンアーキテクチャは依存の方向をドメインに向けて内向きに固定する構造、ヘキサゴナルアーキテクチャはアプリケーションの中心とインフラなどの外側を明確に分離する構造である。MVCは表示・制御・データを分離する構造、モノリスは全機能を一つのアプリケーションにまとめる方式、マイクロサービスは機能ごとに独立したサービスへ分割する方式、モジュラモノリスは一つのアプリケーションでありながら内部を明確なモジュールに分割する折衷案であり、依存方向の管理と循環依存の排除はこれら全てに共通する基本原則である。</p>
+            <p>アーキテクチャの選択はチームの規模や事業のフェーズに強く依存する意思決定であり、流行に流されてマイクロサービス化した結果、運用の複雑さに見合う恩恵を得られない失敗例は数多い。AIがアーキテクチャの設計や移行を提案する際、その組織の規模や成熟度に見合った選択なのかを判断する力は、一人前のエンジニアだけでなくテックリードに強く求められる。</p>
+            <p>実務での落とし穴は、依存方向を意識せずに実装を進めた結果、ドメインロジックがフレームワークやデータベースの詳細に汚染され、テストしにくく変更しにくいコードになることである。循環依存はビルドエラーとして顕在化することもあれば、実行時の予期しない挙動として現れることもあり、モジュール間の依存グラフを定期的に可視化して監視する運用が有効である。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>小さなCRUDアプリをレイヤードアーキテクチャで実装し、ドメインロジックがフレームワークやDBの詳細に依存していないかを確認する。所要目安: 2時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>DDD<span class="gl">ドメイン駆動設計</span></h3>
+      <div class="chips"><span class="chip">ユビキタス言語<span class="gl">関係者共通の用語</span></span>
+            <span class="chip">エンティティ<span class="gl">識別子で同一性を持つ</span></span>
+            <span class="chip">値オブジェクト<span class="gl">値そのもので同一性を持つ</span></span>
+            <span class="chip">集約<span class="gl">整合性を保つ単位</span></span>
+            <span class="chip">ドメインサービス</span>
+            <span class="chip">リポジトリ</span>
+            <span class="chip">境界づけられたコンテキスト<span class="gl">意味が通じる範囲</span></span>
+            <span class="chip">コンテキストマップ<span class="gl">境界間の関係図</span></span></div>
+      <div class="prose"><p>ドメイン駆動設計（DDD）はビジネスドメインの複雑さをコードに正しく反映させるための設計手法であり、ユビキタス言語は開発者とビジネス関係者が共通で使う用語、エンティティは識別子によって同一性を判断されるオブジェクト、値オブジェクトは値そのものによって同一性が決まるオブジェクトである。集約は整合性を保つべき単位としてまとめられたオブジェクト群、ドメインサービスはエンティティに属さないドメインロジックを担う存在、リポジトリは永続化の詳細を隠すインターフェースであり、境界づけられたコンテキストは同じ言葉が異なる意味を持つ範囲を明確に区切る概念、コンテキストマップはその境界間の関係を図示したものである。</p>
+            <p>複雑な業務ロジックを持つシステムでは、DDDの語彙と考え方を理解しているかどうかがコードとビジネスの乖離を防ぐ鍵になる。AIにドメインモデルの設計を相談する際も、エンティティと値オブジェクトの区別、集約の境界の引き方といった判断はビジネス知識との擦り合わせが必要であり、AIの提案を鵜呑みにせず検証する力が求められる。</p>
+            <p>実務での落とし穴は、集約の境界を広く取りすぎてトランザクションが肥大化することや、逆に狭く取りすぎて整合性が保てなくなることである。ユビキタス言語を徹底せずに開発者独自の用語でコードを書くと、ビジネス側とのコミュニケーションコストが増大し、仕様の齟齬がバグとして表面化する。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>身近な業務ドメイン(在庫・予約など)からエンティティと値オブジェクトを1つずつ抽出し、どこまでを1つの集約に含めるか境界を設計してみる。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>API<span class="gl">機能を外部から呼ぶ窓口</span>設計</h3>
+      <div class="chips"><span class="chip">リソース設計とURL命名</span>
+            <span class="chip">メソッドと冪等性の対応</span>
+            <span class="chip">ステータスコード設計</span>
+            <span class="chip">エラーレスポンスの統一形式</span>
+            <span class="chip">ページネーション方式<span class="gl">オフセット／カーソル</span></span>
+            <span class="chip">バージョニング<span class="gl">版の管理</span></span>
+            <span class="chip">レート制限<span class="gl">呼び出し回数の上限</span></span>
+            <span class="chip">OpenAPI<span class="gl">API仕様の記述形式</span></span>
+            <span class="chip">GraphQL<span class="gl">必要な項目だけ取得</span></span>
+            <span class="chip">gRPC<span class="gl">高速な内部通信方式</span></span>
+            <span class="chip">Webhook<span class="gl">イベント発生時の通知</span></span></div>
+      <div class="prose"><p>API設計ではリソース設計とURL命名がまず基本となり、メソッドと冪等性を対応させ、ステータスコードを設計し、エラーレスポンスの形式を統一する。ページネーションにはオフセット方式とカーソル方式があり、バージョニングでAPIの互換性を管理し、レート制限で呼び出し回数の上限を設ける。OpenAPIはAPI仕様を記述する標準形式、GraphQLは必要な項目だけを取得できる問い合わせ言語、gRPCは高速な内部通信向けのプロトコル、Webhookはイベント発生時に外部へ通知する仕組みである。</p>
+            <p>APIは組織の内外を問わずシステム連携の窓口であり、設計が悪いAPIは呼び出し側の実装を複雑にし、変更のたびに互換性を壊すコストを生む。AIがAPIエンドポイントを大量に生成できる時代だからこそ、命名の一貫性、エラーレスポンスの統一、適切なステータスコードの使用といった「地味だが効く」設計原則をレビューで徹底できるかが差になる。</p>
+            <p>実務での落とし穴は、バージョニング戦略を決めないままAPIを公開してしまい後方互換性を壊す変更ができなくなることや、レート制限を設けずに一部のクライアントが大量アクセスして他の利用者に影響を与えることである。OpenAPIで仕様を先に定義してからAIにコード生成を任せると、実装と仕様のズレを防ぎやすいという実務上のコツもある。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>既存のAPIエンドポイントを1つ選んでOpenAPIで仕様を書き起こし、ステータスコードとエラーレスポンス形式が一貫しているか点検する。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>分散システム<span class="gl">複数サーバーで構成</span></h3>
+      <div class="chips"><span class="chip">冪等性の担保</span>
+            <span class="chip">リトライと指数バックオフ<span class="gl">間隔を伸ばして再試行</span></span>
+            <span class="chip">サーキットブレーカ<span class="gl">障害時に呼び出しを遮断</span></span>
+            <span class="chip">タイムアウト設計</span>
+            <span class="chip">結果整合性<span class="gl">時間差で揃う整合性</span></span>
+            <span class="chip">メッセージキュー<span class="gl">非同期の受け渡し</span></span>
+            <span class="chip">冪等キー<span class="gl">重複実行の防止</span></span>
+            <span class="chip">分散トレーシング<span class="gl">処理の横断追跡</span></span>
+            <span class="chip">CAP定理<span class="gl">一貫性・可用性・分断耐性の両立限界</span></span></div>
+      <div class="prose"><p>分散システムでは複数のサーバーが連携して動作するため、操作を何度実行しても同じ結果になる冪等性の担保が重要になり、失敗時には間隔を徐々に伸ばしながら再試行する指数バックオフや、障害時に呼び出しを一時的に遮断するサーキットブレーカが使われる。タイムアウト設計、即座に一致しなくても時間差で揃う結果整合性、非同期にメッセージを受け渡すメッセージキュー、重複実行を防ぐ冪等キー、処理を横断的に追跡する分散トレーシングもこの分野の基本語彙であり、一貫性・可用性・分断耐性を同時には満たせないというCAP定理は分散システム設計の理論的な出発点である。</p>
+            <p>マイクロサービスやクラウドネイティブな構成が一般化した現在、単一のサーバーで完結しないシステムを設計・運用する力は避けて通れない必須スキルであり、部分的な障害が起きても全体が壊れない設計ができるかどうかが可用性を左右する。AIが生成した分散システムの連携コードがリトライの冪等性を考慮していない、あるいはタイムアウトを設定せずに障害の連鎖を招く構造になっていないかを見抜く力が求められる。</p>
+            <p>実務での典型的な落とし穴は、リトライ処理が冪等性を考慮せずに二重決済のような重大な事故を招くことや、サーキットブレーカを導入せずに一つのサービスの障害が連鎖的に全体を巻き込むことである。CAP定理を理解していれば、なぜあるシステムが強い一貫性より可用性を優先しているのかといったアーキテクチャ判断の背景を読み解けるようになる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>外部APIを呼ぶ処理に指数バックオフ付きのリトライを実装し、冪等キーを使わない場合にリトライで二重実行が起こりうることをテストで確認する。所要目安: 1.5時間。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://www.issoh.co.jp/column/details/3406/">クリーンアーキテクチャとは？4層構造・SOLID原則・依存性逆転を実装目線で解説</a>
+          <span class="domain">issoh.co.jp</span>
+          <p class="desc">SOLID原則とクリーンアーキテクチャのつながりを実装視点で学べる</p>
+        </li>
+        <li>
+          <a href="https://zenn.dev/takahiro0404/articles/6c6a82c8607dc0">SOLID原則を理解する</a>
+          <span class="domain">zenn.dev</span>
+          <p class="desc">SOLIDの5原則をひとつずつ丁寧に噛み砕いて学べる</p>
+        </li>
+        <li>
+          <a href="https://kobesoft.co.jp/mikata/words/system-development/ddd/">ドメイン駆動設計（DDD）とは</a>
+          <span class="domain">kobesoft.co.jp</span>
+          <p class="desc">エンティティ・値オブジェクト・集約などDDDの語彙を短時間で把握できる</p>
+        </li>
+        <li>
+          <a href="https://kobesoft.co.jp/mikata/words/system-development/solid-principles/">SOLID原則とは</a>
+          <span class="domain">kobesoft.co.jp</span>
+          <p class="desc">設計原則を一枚のリファレンスとして手早く確認できる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../g6/g6.html">← 6. データベース</a>
+      <a href="../g8/g8.html">8. 開発プロセス →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

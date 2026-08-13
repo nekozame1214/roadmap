@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>データと監査 — セキュリティ・ガバナンス — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../../index.html">← 一覧に戻る</a>
+    <a href="../../ai-skillset.html#L08">チェックリストで見る</a>
+    <span class="strip">
+      <a href="../../study-00/g1/g1.html">00 基礎</a>
+      <a href="../../study-01/g1/g1.html">01 実務開発力</a>
+      <a href="../../study-02/g1/g1.html">02 プロジェクト遂行</a>
+      <a href="../../study-03/g1/g1.html">03 LLM理解</a>
+      <a href="../../study-04/g1/g1.html">04 プロンプト</a>
+      <a href="../../study-05/g1/g1.html">05 実務</a>
+      <a href="../../study-06/g1/g1.html">06 エージェント</a>
+      <a href="../../study-07/g1/g1.html">07 評価</a>
+      <a href="../../study-08/g1/g1.html" class="current">08 セキュリティ</a>
+      <a href="../../study-09/g1/g1.html">09 コスト</a>
+      <a href="../../study-10/g1/g1.html">10 組織</a>
+      <a href="../../study-11/g1/g1.html">11 マインド</a>
+    </span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 08 / セキュリティ・ガバナンス — 2 of 3</p>
+    <h1>データと監査</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>データの取り扱い</h3>
+      <div class="chips"><span class="chip">情報分類<span class="gl">公開・社内・機密・個人情報</span></span>
+            <span class="chip">入力してよい情報の線引き</span>
+            <span class="chip">マスキング<span class="gl">一部を伏せる</span>と匿名化</span>
+            <span class="chip">学習利用オプトアウト<span class="gl">学習に使わせない設定</span>の確認</span>
+            <span class="chip">データ保持期間</span>
+            <span class="chip">保存リージョン<span class="gl">データの所在地</span></span>
+            <span class="chip">顧客データの取り扱い契約</span></div>
+      <div class="prose"><p>AIに何を入力してよいかは、情報分類（公開・社内・機密・個人情報）を前提にした線引きがなければ判断できない。入力してよい情報の線引きが曖昧なまま利用が広がると、機密情報や個人情報が意図せず外部サービスへ流出するリスクが生まれる。</p>
+            <p>この線引きが組織展開の可否を左右するのは、「使ってよい／悪い」の二択ではなく、マスキング（一部を伏せる）と匿名化といった技術的な緩和策を組み合わせられるかどうかにかかっているからである。個人情報を扱う場合は、学習利用オプトアウト（入力データをベンダー側の学習に使わせない設定）の確認が必須になる。</p>
+            <p>加えて、データ保持期間や保存リージョン（データがどの国・地域に保存されるか）は、各国の個人情報保護規制と密接に関わる。顧客データを扱う場合は、顧客データの取り扱い契約でベンダーとの責任範囲を明文化しておかないと、インシデント発生時に誰の責任かが宙に浮いてしまう。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分のチームで「AIに入力してよい情報」の基準が明文化されているか確認する。存在しない場合は、情報分類（公開・社内・機密・個人情報）に沿った簡易チェックリストを1枚自作してみる。所要目安30〜45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>監査とトレーサビリティ<span class="gl">追跡可能性</span></h3>
+      <div class="chips"><span class="chip">利用ログの取得</span>
+            <span class="chip">プロンプトと出力の保存方針</span>
+            <span class="chip">誰がどのエージェントに何をさせたかの記録</span>
+            <span class="chip">異常利用の検知</span>
+            <span class="chip">ログの保持期間とアクセス制御</span></div>
+      <div class="prose"><p>監査とトレーサビリティ（追跡可能性）とは、「誰が」「いつ」「何を」AIにさせたかを後から再構成できる状態を指す。その基盤となるのが利用ログの取得であり、プロンプトと出力の保存方針を事前に定めておく必要がある。</p>
+            <p>これが重要なのは、事故が起きたときに原因を特定できなければ再発防止も説明責任も果たせないからである。誰がどのエージェントに何をさせたかの記録が残っていて初めて、インシデントの範囲を切り分けられる。</p>
+            <p>実務では、異常利用の検知（通常と異なるアクセスパターンやデータ量を自動で拾う仕組み）と、ログの保持期間とアクセス制御（ログ自体が機密情報になりうるため、誰が見られるかを絞る）を両輪で整備する。ログさえ取っていれば安心、と考えるのはよくある落とし穴で、見る仕組みと守る仕組みの両方が必要になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分が使っているAIツール・エージェントの利用ログがどこに保存され、誰がアクセスできるかを実際に管理画面や設定から確認する。保存期間とアクセス権限をメモに残す。所要目安30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>インシデント対応手順</h3>
+      <div class="chips"><span class="chip">検知から封じ込めまでの初動</span>
+            <span class="chip">影響範囲の特定</span>
+            <span class="chip">関係者への通知基準</span>
+            <span class="chip">事後レビューの実施</span>
+            <span class="chip">再発防止策の追跡</span></div>
+      <div class="prose"><p>どれだけ防御を固めても事故はゼロにはならない前提で、検知から封じ込めまでの初動をあらかじめ手順化しておくのがインシデント対応である。初動が遅れるほど被害は拡大するため、誰が何を判断し止めるのかを事前に決めておく必要がある。</p>
+            <p>組織展開の審査では、この手順の有無そのものが問われることが多い。影響範囲の特定（どのデータ・どのユーザーに影響したか）を迅速に行えなければ、関係者への通知基準に沿った対応も遅れてしまう。</p>
+            <p>事後レビューの実施と再発防止策の追跡までを一連の流れとして運用できているかが実務の分かれ目である。インシデントを個別対応で終わらせず、次のレッドチーミングや脅威モデリングへフィードバックする循環を作ることが望ましい。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自組織にAI関連インシデントの対応手順書が存在するか確認する。存在しない場合、「検知→初動→関係者への一次通知」の3ステップだけの簡易フローを叩き台として書いてみる。所要目安45分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://www.ppc.go.jp/news/careful_information/230602_AI_utilize_alert/">生成AIサービスの利用に関する注意喚起等について</a>
+          <span class="domain">ppc.go.jp</span>
+          <p class="desc">個人情報保護委員会による、生成AIへの個人情報入力に関する公式の注意喚起</p>
+        </li>
+        <li>
+          <a href="https://www.pwc.com/jp/ja/knowledge/column/awareness-cyber-security/generative-ai-regulation07.html">生成AIと個人情報―法的論点と実務上の対策の概説</a>
+          <span class="domain">pwc.com</span>
+          <p class="desc">個人情報保護法の観点から生成AI利用時の実務的な対策を学べる</p>
+        </li>
+        <li>
+          <a href="https://techtarget.itmedia.co.jp/tt/news/2605/22/news05.html">「AIが何をしたか分からない」を脱却せよ 情シスが知っておくべきAI監査ログの構築術</a>
+          <span class="domain">itmedia.co.jp</span>
+          <p class="desc">AI監査ログに何を記録し、どう構築・運用するかの実務的な勘所が分かる</p>
+        </li>
+        <li>
+          <a href="https://www.jpcert.or.jp/csirt_material/files/manual_ver1.0_20151126.pdf">インシデントハンドリングマニュアル</a>
+          <span class="domain">jpcert.or.jp</span>
+          <p class="desc">JPCERT/CCによる、検知から封じ込め・事後対応までの標準的な手順書</p>
+        </li>
+        <li>
+          <a href="https://secutils.jp/learn/security/incident-response-guide">セキュリティインシデント対応手順 - 初動から報告書作成まで【CSIRTフロー・テンプレート】</a>
+          <span class="domain">secutils.jp</span>
+          <p class="desc">初動対応から事後レビューまでの流れをテンプレート形式で確認できる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../g1/g1.html">← AI固有の攻撃と防御</a>
+      <a href="../g3/g3.html">法務・調達・ルール →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

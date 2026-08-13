@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>セキュリティ基礎 — エンジニアリング基礎 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../../index.html">← 一覧に戻る</a>
+    <a href="../../ai-skillset.html#L00">チェックリストで見る</a>
+    <span class="strip"><a href="../../study-00/g1/g1.html" class="current">00 基礎</a>
+    <a href="../../study-01/g1/g1.html">01 実務開発力</a>
+    <a href="../../study-02/g1/g1.html">02 プロジェクト遂行</a>
+    <a href="../../study-03/g1/g1.html">03 LLM理解</a>
+    <a href="../../study-04/g1/g1.html">04 プロンプト</a>
+    <a href="../../study-05/g1/g1.html">05 実務</a>
+    <a href="../../study-06/g1/g1.html">06 エージェント</a>
+    <a href="../../study-07/g1/g1.html">07 評価</a>
+    <a href="../../study-08/g1/g1.html">08 セキュリティ</a>
+    <a href="../../study-09/g1/g1.html">09 コスト</a>
+    <a href="../../study-10/g1/g1.html">10 組織</a>
+    <a href="../../study-11/g1/g1.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 00 / エンジニアリング基礎 — 10 of 12</p>
+    <h1>セキュリティ基礎</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>主要な脆弱性</h3>
+      <div class="chips"><span class="chip">SQLインジェクション<span class="gl">問い合わせ文の改ざん</span></span>
+            <span class="chip">XSS<span class="gl">他者のブラウザで悪意ある処理を実行</span></span>
+            <span class="chip">CSRF<span class="gl">意図しない操作を第三者が仕掛ける</span></span>
+            <span class="chip">認可不備<span class="gl">他人のデータが見える</span></span>
+            <span class="chip">SSRF<span class="gl">サーバーを踏み台に内部へ</span></span>
+            <span class="chip">安全でないデシリアライズ<span class="gl">復元処理の悪用</span></span>
+            <span class="chip">パストラバーサル<span class="gl">想定外のファイルへ到達</span></span>
+            <span class="chip">設定ミス・既定パスワード</span></div>
+      <div class="prose"><p>SQLインジェクションは問い合わせ文に悪意あるSQLを混入させる攻撃、XSSは他者のブラウザ上で悪意あるスクリプトを実行させる攻撃、CSRFは意図しない操作を第三者が仕掛ける攻撃であり、認可不備は本来アクセスできないはずの他人のデータが見えてしまう脆弱性である。SSRFはサーバーを踏み台にして内部ネットワークへアクセスする攻撃、安全でないデシリアライズはデータの復元処理を悪用される脆弱性、パストラバーサルは想定外のファイルパスに到達させる攻撃であり、設定ミスや既定パスワードの放置も現実には最も多い侵入経路の一つである。</p>
+            <p>これらの脆弱性は攻撃者にとって最も基本的かつ効果的な攻撃手段であり、一人前のエンジニアは自分が書くコードだけでなく、AIが生成したコードにこれらの脆弱性が混入していないかを検出する責任を負う。特にSQLインジェクションやXSSはAIが生成したコードでも文字列結合による安易な実装として紛れ込みやすく、レビューでの検出が最終防衛線になる。</p>
+            <p>実務での落とし穴は、フレームワークが提供する対策機能（プレースホルダによるSQL実行やテンプレートエンジンの自動エスケープなど）を無効化してしまい、意図せず脆弱性を作り込むことである。認可不備は特に見落とされやすく、URLのIDを書き換えるだけで他人のデータにアクセスできてしまう単純な実装ミスが実際のインシデントの多くを占める。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>文字列結合でSQLを組み立てる脆弱なコードをわざと書いてSQLインジェクションを再現し、プレースホルダを使った修正でどう防げるかを確認する。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>認証・認可</h3>
+      <div class="chips"><span class="chip">ハッシュ化<span class="gl">元に戻せない変換</span>とソルト{付加するランダム値}</span>
+            <span class="chip">セッション管理</span>
+            <span class="chip">OAuth 2.0<span class="gl">他サービスへの権限委譲</span>の各フロー</span>
+            <span class="chip">OIDC<span class="gl">OAuthに本人確認を足した仕組み</span></span>
+            <span class="chip">JWT<span class="gl">署名付きのトークン</span>の検証と落とし穴</span>
+            <span class="chip">リフレッシュトークン<span class="gl">再発行用の鍵</span></span>
+            <span class="chip">MFA<span class="gl">多要素認証</span></span>
+            <span class="chip">RBAC<span class="gl">役割による権限</span>とABAC{属性による権限}</span></div>
+      <div class="prose"><p>パスワードはハッシュ化と呼ばれる元に戻せない変換によって保存し、ソルトという付加的なランダム値で辞書攻撃への耐性を高める。セッション管理、他サービスへ権限を委譲するOAuth 2.0の各フロー、OAuthに本人確認の機能を足したOIDC、署名付きのトークンであるJWTの検証と落とし穴、再発行用の鍵であるリフレッシュトークン、複数の要素を組み合わせるMFA、役割に基づくRBACと属性に基づくABACという権限モデルも認証・認可の基本語彙である。</p>
+            <p>認証・認可の実装ミスは情報漏洩に直結する最も重大なセキュリティリスクの一つであり、AIにログイン機能や権限管理の実装を任せる際には、JWTの検証漏れ（署名アルゴリズムの確認不足など）やセッション固定攻撃への対策漏れがないかを厳密に確認する必要がある。</p>
+            <p>実務での落とし穴は、JWTの有効期限を長く設定しすぎて漏洩時の被害が拡大することや、認可のチェックをフロントエンドだけで行いバックエンドでの検証を省略してしまうことである。OAuth 2.0のフローは種類が多く、用途に合わないフロー（例えばモバイルアプリでインプリシットフローを使うなど）を選んでしまうと、セキュリティ上の弱点を作り込むことになる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>JWTを発行・検証するコードを書き、署名アルゴリズムを確認しない実装だとトークンが改ざんされても通ってしまう(alg=noneの罠)ことを実際に試す。所要目安: 1時間。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>秘匿情報と依存管理</h3>
+      <div class="chips"><span class="chip">シークレット<span class="gl">鍵・パスワード等</span>の保管場所</span>
+            <span class="chip">環境変数とSecret Manager<span class="gl">秘匿情報の管理サービス</span></span>
+            <span class="chip">ローテーション<span class="gl">定期的な入れ替え</span></span>
+            <span class="chip">リポジトリ混入の検知</span>
+            <span class="chip">最小権限の原則</span>
+            <span class="chip">SCA<span class="gl">依存パッケージの脆弱性検査</span></span>
+            <span class="chip">SBOM<span class="gl">使用部品の一覧</span></span>
+            <span class="chip">ライセンス確認</span>
+            <span class="chip">定期更新の仕組み</span></div>
+      <div class="prose"><p>シークレットは鍵やパスワードなどの秘匿情報を指し、環境変数やSecret Managerといった専用の管理サービスで保管し、定期的に入れ替えるローテーションを行う。リポジトリへの混入検知、最小権限の原則、依存パッケージの脆弱性を検査するSCA、使用している部品の一覧であるSBOM、ライセンス確認、そして脆弱性が発見された際に迅速に対応できる定期更新の仕組みもこの領域の重要な実務知識である。</p>
+            <p>現代のソフトウェアは大量のオープンソース依存の上に成り立っており、自分で書いたコードよりも依存パッケージの脆弱性の方がリスクとして大きいことも珍しくない。AIがコード生成時に古い、あるいは既知の脆弱性を持つパッケージを提案していないかをSCAツールで検証する習慣は、AI活用が進むほど重要性を増す。</p>
+            <p>実務での落とし穴は、シークレットを環境変数に平文で置いたままリポジトリの設定ファイルにコミットしてしまうことや、依存パッケージの更新を怠って既知の脆弱性が放置されることである。SBOMを整備しておくことで、新しい脆弱性が公表された際に自社のどのシステムが影響を受けるかを即座に把握でき、インシデント対応の初動を大幅に短縮できる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分のプロジェクトにSCAツール(npm audit等)をかけて検出された脆弱な依存パッケージを1つ選び、実際にバージョンを更新して解消する。所要目安: 45分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://secutils.jp/learn/security/owasp-top-10">OWASP Top 10 入門 - Webアプリの主要セキュリティリスクを解説</a>
+          <span class="domain">secutils.jp</span>
+          <p class="desc">主要な脆弱性カテゴリの全体像を一度に把握できる</p>
+        </li>
+        <li>
+          <a href="https://blog.flatt.tech/entry/how_to_deal_with_injection_vulnerabilities">SQL/コマンドインジェクション、XSS等を横串で理解する</a>
+          <span class="domain">blog.flatt.tech</span>
+          <p class="desc">インジェクション系脆弱性の共通原理と対策を横断的に学べる</p>
+        </li>
+        <li>
+          <a href="https://www.tech-tldr.com/security/">セキュリティ入門 — 認証・認可の方式とWeb攻撃対策の基礎</a>
+          <span class="domain">tech-tldr.com</span>
+          <p class="desc">認証・認可の基本方式と代表的な攻撃対策を整理して学べる</p>
+        </li>
+        <li>
+          <a href="https://yamory.io/blog/about-sca">ソフトウェアコンポジション解析（SCA）とは？機能やおすすめツールを紹介</a>
+          <span class="domain">yamory.io</span>
+          <p class="desc">依存パッケージの脆弱性管理とSBOMの関係がわかる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../g9/g9.html">← 9. インフラ・運用</a>
+      <a href="../g11/g11.html">11. コード読解力 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>システム設計実践・スケーラビリティ — 実務ソフトウェア開発力 — 学習資料</title>
+<style>
+:root{
+  --paper:#E9EBEE;--card:#F5F6F8;--ink:#161B21;--ink2:#48525C;--ink3:#7B858F;
+  --rule:#CCD2D8;--rule2:#DDE1E5;--shu:#BF3B2E;--moss:#24645A;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Roboto Mono",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Hiragino Sans",Meiryo,system-ui,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  font-size:15px;line-height:1.85;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+.navbar{position:sticky;top:0;z-index:30;background:rgba(233,235,238,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px}
+.navbar a{color:var(--ink2);text-decoration:none;padding:4px 10px;border:1px solid var(--rule);border-radius:999px;white-space:nowrap;transition:all .15s}
+.navbar a:hover{border-color:var(--ink3);color:var(--ink)}
+.navbar a.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.navbar .strip{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap}
+.navbar .strip a{padding:3px 7px;font-size:10.5px}
+.navbar .strip a.current{background:var(--shu);border-color:var(--shu);color:#fff}
+
+.masthead{padding:44px 0 22px;border-bottom:1px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px}
+h1{font-family:var(--mincho);font-weight:600;font-size:clamp(22px,3.6vw,32px);line-height:1.35;margin:0;letter-spacing:.02em}
+
+main{padding-top:30px}
+
+.entry{background:var(--card);border:1px solid var(--rule2);padding:24px 26px;margin:0 0 28px}
+h3{font-family:var(--gothic);font-size:16px;font-weight:700;margin:0 0 12px;letter-spacing:.01em}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.chip{font-size:11px;line-height:1.5;color:var(--ink2);background:var(--paper);border:1px solid var(--rule2);
+  border-radius:3px;padding:1px 7px;white-space:normal}
+.prose p{margin:0 0 12px;color:var(--ink2);font-size:13.8px;line-height:1.9}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.gl{font-size:12.5px;color:var(--shu);font-family:var(--gothic);letter-spacing:0;font-weight:400}
+.gl::before{content:"（"}
+.gl::after{content:"）"}
+
+/* 実践課題 */
+.practice{margin-top:18px;padding:16px 18px;background:var(--paper);border-left:3px solid var(--moss)}
+.practice h4{font-family:var(--gothic);font-size:12px;font-weight:700;color:var(--moss);margin:0 0 8px;letter-spacing:.02em}
+.practice p{margin:0 0 8px;color:var(--ink2);font-size:13.3px;line-height:1.85}
+.practice p:last-child{margin-bottom:0}
+
+/* 参考リンク（グループ末尾） */
+.refs{margin-top:8px;padding-top:26px;border-top:1px solid var(--ink)}
+.refs h2{font-family:var(--mincho);font-size:18px;font-weight:600;margin:0 0 16px}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule2);border:1px solid var(--rule2)}
+.refs li{background:var(--card);padding:14px 18px}
+.refs a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px}
+.refs a:hover{color:var(--shu)}
+.refs a::after{content:" ↗";font-weight:400;color:var(--ink3)}
+.refs .desc{margin:5px 0 0;color:var(--ink2);font-size:12.5px;line-height:1.7}
+.refs .domain{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-left:2px}
+
+.footnav{border-top:1px solid var(--ink);padding-top:24px;margin-top:36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footnav a{font-family:var(--mono);font-size:12px;color:var(--ink2);text-decoration:none;border:1px solid var(--rule);padding:8px 14px;border-radius:3px}
+.footnav a:hover{border-color:var(--ink3);color:var(--ink)}
+
+@media(max-width:860px){
+  .shell{padding:0 16px 80px}
+  .masthead{padding:30px 0 18px}
+  .navbar-inner{padding:9px 16px}
+  .navbar .strip{width:100%;order:3}
+  .entry{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a href="../../index.html">← 一覧に戻る</a>
+    <a href="../../ai-skillset.html#L01">チェックリストで見る</a>
+    <span class="strip"><a href="../../study-00/g1/g1.html">00 基礎</a>
+      <a href="../../study-01/g1/g1.html" class="current">01 実務開発力</a>
+      <a href="../../study-02/g1/g1.html">02 プロジェクト遂行</a>
+      <a href="../../study-03/g1/g1.html">03 LLM理解</a>
+      <a href="../../study-04/g1/g1.html">04 プロンプト</a>
+      <a href="../../study-05/g1/g1.html">05 実務</a>
+      <a href="../../study-06/g1/g1.html">06 エージェント</a>
+      <a href="../../study-07/g1/g1.html">07 評価</a>
+      <a href="../../study-08/g1/g1.html">08 セキュリティ</a>
+      <a href="../../study-09/g1/g1.html">09 コスト</a>
+      <a href="../../study-10/g1/g1.html">10 組織</a>
+      <a href="../../study-11/g1/g1.html">11 マインド</a></span>
+  </div>
+</div>
+
+<div class="shell">
+  <header class="masthead">
+    <p class="eyebrow">Layer 01 / 実務ソフトウェア開発力 — 4 of 6</p>
+    <h1>システム設計実践・スケーラビリティ</h1>
+  </header>
+
+  <main>
+    <article class="entry">
+      <h3>キャパシティ見積もり</h3>
+      <div class="chips"><span class="chip">想定トラフィックの試算</span>
+            <span class="chip">ピーク時倍率の考慮</span>
+            <span class="chip">リソース使用量の見積もり手順</span>
+            <span class="chip">将来の伸びを織り込む</span>
+            <span class="chip">見積もりの前提を記録する</span></div>
+      <div class="prose"><p>キャパシティ見積もりとは、システムがどれだけの負荷に耐える必要があるかを事前に算出し、必要なリソースを準備する作業である。<strong>想定トラフィックの試算</strong>を行わずにシステムを設計すると、リリース後に想定外の負荷で落ちるか、逆に過剰なリソースを無駄に確保することになる。</p>
+            <p>一人前のエンジニアは、平均的な負荷だけでなく<strong>ピーク時倍率の考慮</strong>を忘れない。セールやキャンペーンのタイミングでは平常時の数倍のトラフィックが来ることも珍しくなく、平均値だけを基準に設計すると本当に必要なときに耐えられない。</p>
+            <p>実務では、CPU・メモリ・DB接続数などの<strong>リソース使用量の見積もり手順</strong>を型として持っておくと、新しい機能を追加するたびにゼロから考え直さずに済む。また事業が成長すればトラフィックも増えるため、<strong>将来の伸びを織り込む</strong>視点がないと数か月後には見積もりが陳腐化する。そして意外と軽視されがちなのが<strong>見積もりの前提を記録する</strong>ことで、「なぜこの数値にしたのか」を残しておかなければ、後から見積もりを見直す際に一から検証をやり直す羽目になる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分のサービス（または仮想のサービス）を題材に、想定DAUとピーク時倍率から必要なリクエスト数/秒とDB接続数を紙やメモ上で試算し、見積もりの前提条件を書き残す。所要目安45分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>キャッシュ戦略</h3>
+      <div class="chips"><span class="chip">キャッシュ層の配置場所<span class="gl">ブラウザ・CDN・アプリ・DB</span></span>
+            <span class="chip">キャッシュ無効化のタイミング設計</span>
+            <span class="chip">キャッシュキー設計</span>
+            <span class="chip">キャッシュスタンピード<span class="gl">一斉再生成による負荷集中</span>対策</span>
+            <span class="chip">整合性とのトレードオフ</span></div>
+      <div class="prose"><p>キャッシュとは、計算コストの高い結果や取得コストの高いデータを一時的に保存しておき、次回以降のアクセスを高速化する仕組みである。<strong>キャッシュ層の配置場所</strong>にはブラウザ・CDN・アプリケーション・DBなど複数の選択肢があり、どこに置くかによって効果もリスクも変わる。</p>
+            <p>一人前のエンジニアが必ずぶつかるのが「キャッシュ無効化はコンピュータサイエンスで最も難しい問題の一つ」と言われる<strong>キャッシュ無効化のタイミング設計</strong>である。元データが更新されたのにキャッシュが古いままだと、ユーザーに間違った情報を見せてしまう。適切な<strong>キャッシュキー設計</strong>によって、どの条件が変わればキャッシュを別物として扱うべきかを明確にしておくことも欠かせない。</p>
+            <p>実務での落とし穴として、キャッシュが一斉に切れた瞬間に大量のリクエストが同時に元データへ殺到する<strong>キャッシュスタンピード対策</strong>を怠ると、キャッシュが守るはずだった裏側のシステムがかえって過負荷になることがある。最終的にキャッシュ戦略とは、常に最新の情報を返すことと高速に返すことの<strong>整合性とのトレードオフ</strong>をどこで折り合わせるかという意思決定であり、ビジネス要件に応じて許容できる古さの範囲を決める判断力が問われる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>頻繁に呼ばれる処理に簡易キャッシュ（インメモリまたはRedis）を導入し、キャッシュキーとTTLを設計して実装する。キャッシュが切れた直後に複数リクエストが同時に来る状況を意図的に再現し、スタンピードが起きるか観察する。所要目安60分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>データ分割・シャーディング</h3>
+      <div class="chips"><span class="chip">水平分割と垂直分割の違い</span>
+            <span class="chip">シャーディングキーの選定</span>
+            <span class="chip">再シャーディングの難しさ</span>
+            <span class="chip">ホットスポット<span class="gl">偏った負荷集中</span>の回避</span>
+            <span class="chip">分割後のクロスシャードクエリ対応</span></div>
+      <div class="prose"><p>データ分割・シャーディングとは、単一のDBサーバーでは処理しきれない量のデータやアクセスを、複数のサーバーに分散させる技術である。行単位でサーバーを分ける水平分割と、テーブルの列単位で分ける垂直分割という<strong>水平分割と垂直分割の違い</strong>を理解することが出発点になる。</p>
+            <p>一人前のエンジニアがとくに慎重になるべきなのが<strong>シャーディングキーの選定</strong>だ。ユーザーIDや地域など、どの値を基準にデータを振り分けるかによって、後々のクエリのしやすさやデータの偏りが大きく変わる。選定を誤ると、一部のシャードにアクセスが集中する<strong>ホットスポットの回避</strong>ができず、分散させたはずなのに一部のサーバーだけが過負荷になるという皮肉な結果を招く。</p>
+            <p>実務での大きな落とし穴は、シャード数を後から変更する<strong>再シャーディングの難しさ</strong>である。一度運用に乗せたシャーディング構成を後から作り直すのは、大規模なデータ移行を伴う非常にコストの高い作業になる。また分割後は複数のシャードにまたがるデータを結合して取得する<strong>クロスシャードクエリ対応</strong>が単純な1台構成のときより格段に難しくなるため、シャーディングは本当に必要になってから導入する、後戻りしにくい重い決断だと理解しておく必要がある。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>架空のユーザーテーブルを題材に、ユーザーID・地域・作成日時のどれをシャーディングキーにすべきか、それぞれのメリット・デメリットとホットスポットのリスクを比較表にまとめる。所要目安30分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>冪等性・レートリミットの実装</h3>
+      <div class="chips"><span class="chip">冪等キーの発行と検証</span>
+            <span class="chip">重複リクエストの検知</span>
+            <span class="chip">トークンバケット<span class="gl">一定速度で許可枠を補充</span>方式</span>
+            <span class="chip">スライディングウィンドウ<span class="gl">直近区間で数える</span>方式</span>
+            <span class="chip">429応答<span class="gl">制限超過</span>の設計</span></div>
+      <div class="prose"><p>冪等性とは、同じ操作を何度実行しても結果が1回実行したときと変わらない性質のことで、ネットワークが不安定な環境でリトライを安全に行うための基盤である。実装の基本パターンは<strong>冪等キーの発行と検証</strong>で、クライアントがリクエストごとに一意なキーを発行し、サーバー側がそのキーで<strong>重複リクエストの検知</strong>を行って二重処理を防ぐ。</p>
+            <p>一人前のエンジニアがこれを重視すべき理由は、決済処理のようにリクエストが二重に実行されると実害の大きい場面が実務には多いからだ。ネットワーク断でクライアントがリトライしても、サーバー側が冪等性を保証していれば安心して再送できる。</p>
+            <p>レートリミットは別の観点で、過剰なリクエストからシステムを守る仕組みである。一定速度で許可枠を補充していく<strong>トークンバケット方式</strong>と、直近の時間窓でリクエスト数を数える<strong>スライディングウィンドウ方式</strong>という代表的な2つのアルゴリズムがあり、それぞれ実装コストと精度のトレードオフが異なる。制限を超えたときにどのような<strong>429応答の設計</strong>を返すか、いつ再試行できるかをクライアントに伝えるヘッダーを含めるかといった細部まで詰めておくことが、良いAPI設計の実務的な勘所である。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>シンプルなAPIエンドポイントにトークンバケット方式のレートリミットを自作し、制限を超えたリクエストに対して429応答と再試行可能時刻を示すヘッダーを返すよう実装する。所要目安60分。</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <h3>障害を前提にした設計</h3>
+      <div class="chips"><span class="chip">単一障害点<span class="gl">そこが壊れると全体が止まる箇所</span>の洗い出し</span>
+            <span class="chip">縮退運転<span class="gl">一部機能を落として継続</span>の設計</span>
+            <span class="chip">フォールバック<span class="gl">代替手段</span>の用意</span>
+            <span class="chip">部分的な機能停止の許容範囲の合意</span>
+            <span class="chip">カオスエンジニアリング<span class="gl">意図的に障害を起こして検証</span>の考え方</span></div>
+      <div class="prose"><p>障害を前提にした設計とは、「いつか必ず何かが壊れる」という現実を受け入れ、壊れたときにシステム全体が止まらないように作る考え方である。まず行うべきは<strong>単一障害点の洗い出し</strong>で、そこが1つ壊れるだけで全体が停止してしまう箇所を特定し、優先的に対策する。</p>
+            <p>一人前のエンジニアがこの発想を持つべき理由は、規模の大きいシステムほど「絶対に壊れない」を目指すコストが非現実的に高くなるからだ。代わりに、一部機能を落としてでもサービス全体は継続する<strong>縮退運転の設計</strong>や、依存先が落ちたときに代替の応答を返す<strong>フォールバックの用意</strong>によって、被害を局所化する方が現実的である。</p>
+            <p>実務での重要な勘所は、事前に<strong>部分的な機能停止の許容範囲の合意</strong>をビジネス側と取っておくことだ。エンジニアだけの判断で「この機能は落としても良い」と決めてしまうと、後で認識のずれが問題になる。さらに成熟した組織では、意図的に本番相当の環境で障害を発生させて耐性を検証する<strong>カオスエンジニアリングの考え方</strong>を取り入れ、机上の設計が本当に機能するかを実証的に確かめる。</p></div>
+      <div class="practice">
+        <h4>🔧 やってみよう</h4>
+        <p>自分のシステム（または仮想のシステム）の構成図を簡単に描き、単一障害点を1つ以上洗い出す。その箇所に対するフォールバックまたは縮退運転の案を1つ設計してメモに残す。所要目安45分。</p>
+      </div>
+    </article>
+
+    <div class="refs">
+      <h2>参考リンク</h2>
+      <ul>
+        <li>
+          <a href="https://odigo.jp/capacity-plan/">キャパシティ計画のすべて〜失敗しない設計・運用・実践ガイド〜</a>
+          <span class="domain">odigo.jp</span>
+          <p class="desc">トラフィック試算からリソース見積もりまでの実務手順を学べる</p>
+        </li>
+        <li>
+          <a href="https://future-architect.github.io/articles/20240124a/">ぼくのかんがえたさいきょうのキャッシュ戦略</a>
+          <span class="domain">future-architect.github.io</span>
+          <p class="desc">キャッシュ層の配置や無効化設計の考え方を学べる</p>
+        </li>
+        <li>
+          <a href="https://note.com/minato_kame/n/nc7b30a073e90">データベースのシャーディングとは？分割で負荷を分散しよう！</a>
+          <span class="domain">note.com</span>
+          <p class="desc">水平分割の仕組みとシャーディングキー選定の考え方を学べる</p>
+        </li>
+        <li>
+          <a href="https://www.issoh.co.jp/tech/details/16179/">レートリミットとは？アルゴリズム5方式と429設計・分散環境の実装を解説</a>
+          <span class="domain">issoh.co.jp</span>
+          <p class="desc">トークンバケットなど代表的なレートリミット方式と429応答設計を学べる</p>
+        </li>
+        <li>
+          <a href="https://principlesofchaos.org/ja/">カオスエンジニアリングの原則</a>
+          <span class="domain">principlesofchaos.org</span>
+          <p class="desc">障害を前提にした設計とカオスエンジニアリングの考え方の原典を学べる</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footnav">
+      <a href="../g3/g3.html">← バックエンド実務</a>
+      <a href="../g5/g5.html">パフォーマンスチューニング実務 →</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>
